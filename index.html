@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vanda Andrian — Marketing</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0E0E0E;
+    --white: #FAFAF8;
+    --mid: #6B6B6B;
+    --line: rgba(0,0,0,0.1);
+    --accent: #0E0E0E;
+    --red: #E03030;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--white);
+    color: var(--black);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 48px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(250,250,248,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-name {
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.8rem;
+    text-decoration: none;
+    color: var(--mid);
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--black); }
+  .nav-available {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--mid);
+  }
+  .dot {
+    width: 7px; height: 7px;
+    background: #22c55e;
+    border-radius: 50%;
+    animation: pulse 2.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* HERO */
+  .hero {
+    padding: 160px 48px 120px;
+    max-width: 960px;
+  }
+  .hero-tag {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 32px;
+  }
+  .hero-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(56px, 8vw, 100px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .hero-name em {
+    font-style: italic;
+    color: var(--mid);
+  }
+  .hero-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--mid);
+    margin-bottom: 40px;
+  }
+  .hero-desc {
+    max-width: 480px;
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--mid);
+    margin-bottom: 48px;
+  }
+  .hero-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .link-primary {
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--white);
+    background: var(--black);
+    padding: 12px 28px;
+    transition: opacity 0.2s;
+  }
+  .link-primary:hover { opacity: 0.8; }
+  .link-secondary {
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    color: var(--mid);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .link-secondary:hover { color: var(--black); border-color: var(--black); }
+
+  /* DIVIDER */
+  hr {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 0 48px;
+  }
+
+  /* SECTION */
+  section { padding: 100px 48px; }
+  .section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 60px;
+  }
+
+  /* SKILLS GRID */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid var(--line);
+  }
+  .skill-item {
+    padding: 36px 32px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .skill-item:nth-child(3n) { border-right: none; }
+  .skill-item:nth-last-child(-n+3) { border-bottom: none; }
+  .skill-num {
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    color: var(--mid);
+    margin-bottom: 16px;
+  }
+  .skill-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+  }
+  .skill-desc {
+    font-size: 0.8rem;
+    line-height: 1.65;
+    color: var(--mid);
+  }
+
+  /* WORK / CASE STUDIES */
+  .work-grid { display: flex; flex-direction: column; gap: 0; }
+  .case-study {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 0;
+    border-top: 1px solid var(--line);
+    padding: 48px 0;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s;
+    cursor: pointer;
+  }
+  .case-study:last-child { border-bottom: 1px solid var(--line); }
+  .case-study:hover .cs-arrow { transform: translate(4px, -4px); }
+  .case-meta { padding-right: 48px; }
+  .cs-number {
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    color: var(--mid);
+    margin-bottom: 16px;
+  }
+  .cs-client {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 8px;
+  }
+  .cs-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.8rem;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .case-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .cs-desc {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--mid);
+    max-width: 500px;
+    margin-bottom: 24px;
+  }
+  .cs-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .cs-tag {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+    padding: 5px 12px;
+    color: var(--mid);
+  }
+  .cs-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cs-year { font-size: 0.75rem; color: var(--mid); }
+  .cs-arrow {
+    font-size: 1.1rem;
+    transition: transform 0.25s;
+  }
+  .cs-highlight {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: #F3F0E8;
+    padding: 5px 12px;
+    color: #7A6F50;
+    margin-bottom: 20px;
+  }
+  .cs-highlight span { font-size: 10px; }
+
+  /* PLACEHOLDER CARDS */
+  .placeholder-card {
+    border: 1px dashed var(--line);
+    padding: 48px 32px;
+    text-align: center;
+    color: var(--mid);
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+  .placeholder-card strong {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--black);
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .about-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--mid);
+  }
+  .about-text p { margin-bottom: 20px; }
+  .about-text p:last-child { margin-bottom: 0; }
+  .about-info { display: flex; flex-direction: column; gap: 0; }
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.82rem;
+  }
+  .info-row:first-child { border-top: 1px solid var(--line); }
+  .info-key { color: var(--mid); letter-spacing: 0.05em; }
+  .info-val { font-weight: 500; text-align: right; }
+
+  /* CONTACT */
+  .contact-section {
+    padding: 100px 48px 120px;
+    background: var(--black);
+    color: var(--white);
+  }
+  .contact-section .section-label { color: rgba(255,255,255,0.4); }
+  .contact-headline {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+  .contact-headline em { font-style: italic; color: rgba(255,255,255,0.4); }
+  .contact-links { display: flex; flex-direction: column; gap: 0; }
+  .contact-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-decoration: none;
+    color: var(--white);
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s;
+  }
+  .contact-link:first-child { border-top: 1px solid rgba(255,255,255,0.1); }
+  .contact-link:hover { opacity: 0.6; }
+  .contact-link-arrow { font-size: 0.9rem; opacity: 0.4; }
+
+  /* FOOTER */
+  footer {
+    padding: 24px 48px;
+    background: var(--black);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.in { opacity: 1; transform: none; }
+  .reveal-d1 { transition-delay: 0.1s; }
+  .reveal-d2 { transition-delay: 0.2s; }
+  .reveal-d3 { transition-delay: 0.3s; }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 24px; }
+    .nav-links, .nav-available { display: none; }
+    .hero { padding: 120px 24px 80px; }
+    section { padding: 64px 24px; }
+    hr { margin: 0 24px; }
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    .skill-item:nth-child(3n) { border-right: 1px solid var(--line); }
+    .skill-item:nth-child(2n) { border-right: none; }
+    .case-study { grid-template-columns: 1fr; gap: 24px; }
+    .case-meta { padding-right: 0; }
+    .about-grid { grid-template-columns: 1fr; gap: 48px; }
+    .contact-section { padding: 64px 24px 80px; }
+    footer { padding: 20px 24px; flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-name">Vanda Andrian</div>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-available">
+    <div class="dot"></div>
+    Available for projects
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-tag reveal">Marketing — Strategy & Creative</p>
+  <h1 class="hero-name reveal reveal-d1">Vanda<br><em>Andrian</em></h1>
+  <p class="hero-title reveal reveal-d2">Marketing that moves people.</p>
+  <p class="hero-desc reveal reveal-d3">I build campaigns that earn attention — from brand strategy to content that converts. This page serves as a portfolio where I showcase samples of my work, including projects where I use AI tools to enhance and accelerate the creative process. </p>
+  <div class="hero-links reveal reveal-d3">
+    <a href="#work" class="link-primary">View work</a>
+    <a href="#contact" class="link-secondary">Get in touch →</a>
+  </div>
+</div>
+
+<hr>
+
+<!-- SKILLS -->
+<section id="skills">
+  <p class="section-label reveal">What I do</p>
+  <div class="skills-grid">
+    <div class="skill-item reveal">
+      <div class="skill-num">01</div>
+      <div class="skill-name">Campaign Strategy</div>
+      <p class="skill-desc">End-to-end campaign planning — from audience research and platform selection to messaging frameworks and launch sequencing.</p>
+    </div>
+    <div class="skill-item reveal reveal-d1">
+      <div class="skill-num">02</div>
+      <div class="skill-name">Content & Copywriting</div>
+      <p class="skill-desc">Multi-language platform-native content across TikTok, Instagram, email, and web. Copy that sounds human, performs well, and fits the brand voice.</p>
+    </div>
+    <div class="skill-item reveal reveal-d2">
+      <div class="skill-num">03</div>
+      <div class="skill-name">AI-Powered Marketing</div>
+      <p class="skill-desc">Using tools like Claude, Midjourney, and Opus Clip to scale creative output, test more variants, and move faster without losing quality.</p>
+    </div>
+    <div class="skill-item reveal">
+      <div class="skill-num">04</div>
+      <div class="skill-name">Social Media</div>
+      <p class="skill-desc">TikTok-first thinking, creator seeding strategies, algorithm-aware content calendars, and organic growth frameworks.</p>
+    </div>
+    <div class="skill-item reveal reveal-d1">
+      <div class="skill-num">05</div>
+      <div class="skill-name">Brand Identity</div>
+      <p class="skill-desc">Design, positioning, tone of voice, visual direction, and the connective tissue that makes a brand feel consistent across every touchpoint.</p>
+    </div>
+    <div class="skill-item reveal reveal-d2">
+      <div class="skill-num">06</div>
+      <div class="skill-name">Analytics & KPIs</div>
+      <p class="skill-desc">Setting measurable goals, reading and analyzing the data, and knowing when to pivot. Marketing decisions grounded in what's actually working and making influential changes when it's not.</p>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- WORK -->
+<section id="work">
+  <p class="section-label reveal">Selected work</p>
+  <div class="work-grid">
+
+    <!-- CASE STUDY 1 — Zara Vale -->
+    <div class="case-study reveal" onclick="window.open('zara-vale-campaign.html', '_blank')">
+      <div class="case-meta">
+        <p class="cs-number">01</p>
+        <p class="cs-client">Music / Entertainment</p>
+        <h2 class="cs-title">Zara Vale — STATIC</h2>
+      </div>
+      <div class="case-body">
+        <div>
+          <div class="cs-highlight"><span>★</span> AI-Powered Campaign</div>
+          <p class="cs-desc">A TikTok-first launch campaign for an imaginary emerging pop artist. Built the full strategy, content plan, copywriting, and creative brief — using Claude, Midjourney, Suno AI, and Opus Clip to accelerate every stage of production.</p>
+          <div class="cs-tags">
+            <span class="cs-tag">TikTok Strategy</span>
+            <span class="cs-tag">Campaign Concept</span>
+            <span class="cs-tag">AI Copywriting</span>
+            <span class="cs-tag">Creator Seeding</span>
+            <span class="cs-tag">Content Planning</span>
+          </div>
+        </div>
+        <div class="cs-footer">
+          <span class="cs-year">2025 — Mock Campaign</span>
+          <span class="cs-arrow">↗</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RINA SASTRA DATA ANALYSIS -->
+    <div class="case-study reveal" onclick="window.open('rina-sastra-analysis.html', '_blank')">
+      <div class="case-meta">
+        <p class="cs-number">02</p>
+        <p class="cs-client">Music / Data Analysis</p>
+        <h2 class="cs-title">Rina Sastra — Social Media Analysis</h2>
+      </div>
+      <div class="case-body">
+        <div>
+          <div class="cs-highlight"><span>★</span> Python & Data Project</div>
+          <p class="cs-desc">A Python-based social media performance analysis for an emerging Indonesian indie artist. Built a mock dataset, cleaned and analysed it with pandas, and visualised key findings using matplotlib — identifying platform strategy, content performance, and campaign lift.</p>
+          <div class="cs-tags">
+            <span class="cs-tag">Python</span>
+            <span class="cs-tag">Data Analysis</span>
+            <span class="cs-tag">pandas</span>
+            <span class="cs-tag">Data Visualisation</span>
+            <span class="cs-tag">Social Media</span>
+          </div>
+        </div>
+        <div class="cs-footer">
+          <span class="cs-year">2025 — Mock Project</span>
+          <span class="cs-arrow">↗</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLACEHOLDER 3 -->
+    <div class="case-study reveal" style="cursor: default;">
+      <div class="case-meta">
+        <p class="cs-number">03</p>
+        <p class="cs-client">Your industry here</p>
+        <h2 class="cs-title" style="color: var(--mid);">Third case study</h2>
+      </div>
+      <div class="case-body">
+        <div>
+          <p class="cs-desc" style="font-style: italic;">A third project rounds out a strong portfolio. Think about including something with quantifiable results — engagement rates, follower growth, conversion lifts, or revenue impact.</p>
+        </div>
+        <div class="cs-footer">
+          <span class="cs-year">Coming soon</span>
+          <span class="cs-arrow" style="opacity: 0.2;">↗</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr>
+
+<!-- ABOUT -->
+<section id="about">
+  <p class="section-label reveal">About</p>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>I'm Vanda — a marketing professional who thinks in campaigns and executes in content. I work at the intersection of strategy, creative, and technology, building brand stories that reach the right people at the right moment.</p>
+      <p>Right now I'm particularly interested in how AI tools are changing what's possible in marketing and content  — not replacing the thinking, but dramatically expanding what one person or a small team can produce.</p>
+      <p>Outside of work, you'll probably find me on a golf course or tennis court, and I'm building an Indonesian-language YouTube channel on the side — which means I'm always thinking about audience, storytelling, and what makes people actually watch.</p>
+    </div>
+    <div class="about-info reveal reveal-d1">
+      <div class="info-row">
+        <span class="info-key">Based</span>
+        <span class="info-val">Jakarta, Indonesia</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Specialisation</span>
+        <span class="info-val">Digital & Campaign Marketing</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">AI Tools</span>
+        <span class="info-val">Claude, Midjourney, Suno, Opus Clip</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Languages</span>
+        <span class="info-val">Indonesian, English</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Status</span>
+        <span class="info-val" style="color: #22c55e;">Available for projects</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<div class="contact-section" id="contact">
+  <p class="section-label reveal">Contact</p>
+  <h2 class="contact-headline reveal reveal-d1">Let's make something<br><em>worth noticing.</em></h2>
+  <div class="contact-links reveal reveal-d2">
+    <a href="mailto:hello@vandaandrian.com" class="contact-link">
+      <span>vanda.zhang@gmail.com</span>
+      <span class="contact-link-arrow">↗</span>
+    </a>
+    <a href="https://linkedin.com/in/vandrian" class="contact-link" target="_blank">
+      <span>LinkedIn</span>
+      <span class="contact-link-arrow">↗</span>
+    </a>
+    <a href="https://instagram.com/vanda.zh" class="contact-link" target="_blank">
+      <span>Instagram</span>
+      <span class="contact-link-arrow">↗</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <span>Vanda Andrian — Marketing Portfolio</span>
+  <span>© 2025</span>
+</footer>
+
+<script>
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
