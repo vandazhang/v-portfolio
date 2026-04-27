@@ -15,7 +15,6 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -48,7 +47,6 @@
     transform: translate(-50%, -50%);
     transition: transform 0.15s ease-out, width 0.3s, height 0.3s;
   }
-  body:hover .cursor { opacity: 1; }
 
   /* NOISE OVERLAY */
   body::before {
@@ -145,7 +143,7 @@
     animation: fadeUp 0.9s 0.6s forwards;
   }
   .hero-cta-row {
-    margin-top: 48px;
+    margin-top: 32px;
     display: flex;
     gap: 16px;
     align-items: center;
@@ -182,6 +180,78 @@
     transition: gap 0.2s;
   }
   .btn-ghost:hover { gap: 14px; }
+
+  /* HERO AUDIO PLAYER */
+  .hero-player {
+    margin-top: 28px;
+    opacity: 0;
+    animation: fadeUp 0.9s 1s forwards;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(10,10,10,0.06);
+    border: 1px solid rgba(10,10,10,0.1);
+    padding: 14px 18px;
+    max-width: 340px;
+  }
+  .hp-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--hot);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .hp-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(255,51,102,0.4);
+  }
+  .hp-btn svg { width: 15px; height: 15px; fill: white; }
+  .hp-info { flex-shrink: 0; }
+  .hp-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    color: var(--black);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .hp-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(10,10,10,0.4);
+  }
+  .hp-progress-wrap { flex: 1; min-width: 0; }
+  .hp-bar {
+    width: 100%;
+    height: 2px;
+    background: rgba(10,10,10,0.12);
+    border-radius: 1px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+  .hp-fill {
+    height: 100%;
+    background: var(--hot);
+    border-radius: 1px;
+    width: 0%;
+    transition: width 0.1s linear;
+    pointer-events: none;
+  }
+  .hp-times {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.56rem;
+    color: rgba(10,10,10,0.35);
+    letter-spacing: 0.04em;
+  }
+
+  /* HERO RIGHT */
   .hero-right {
     position: relative;
     overflow: hidden;
@@ -205,42 +275,25 @@
     pointer-events: none;
     user-select: none;
   }
+  .hero-img-box::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.15), rgba(10,10,10,0.10));
+    z-index: 1;
+  }
   .artist-visual {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-  .hero-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 30%;
-}
-  }
-    background:
-      radial-gradient(ellipse 60% 80% at 55% 40%, #FF89A8 0%, transparent 60%),
-      radial-gradient(ellipse 40% 60% at 70% 70%, #FFB347 0%, transparent 50%),
-      linear-gradient(160deg, #1a1a2e 0%, #2d1b4e 50%, #0A0A0A 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .silhouette {
-    width: 55%;
-    height: 85%;
-    background: linear-gradient(180deg, rgba(255,51,102,0.15) 0%, rgba(10,10,10,0.95) 100%);
-    clip-path: polygon(30% 0%, 70% 0%, 85% 8%, 90% 25%, 85% 45%, 75% 55%, 78% 70%, 82% 85%, 80% 100%, 20% 100%, 18% 85%, 22% 70%, 25% 55%, 15% 45%, 10% 25%, 15% 8%);
+    width: 100%;
+    height: 100%;
     position: relative;
   }
-  .silhouette::before {
-    content: '';
-    position: absolute;
-    top: -5%;
-    left: 20%;
-    width: 60%;
-    height: 35%;
-    background: radial-gradient(ellipse, rgba(255,200,180,0.3) 0%, transparent 70%);
-    border-radius: 50%;
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    position: relative;
+    z-index: 0;
   }
   .floating-tag {
     position: absolute;
@@ -252,6 +305,7 @@
     font-weight: 500;
     color: var(--black);
     white-space: nowrap;
+    z-index: 2;
   }
   .tag1 { top: 25%; right: 8%; animation: float 4s ease-in-out infinite; }
   .tag2 { bottom: 30%; left: 5%; animation: float 4s ease-in-out infinite 1.5s; }
@@ -270,7 +324,6 @@
   .ticker-inner {
     display: inline-flex;
     animation: ticker 20s linear infinite;
-    gap: 0;
   }
   .ticker-item {
     font-family: 'Bebas Neue', sans-serif;
@@ -283,7 +336,7 @@
   }
   .ticker-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; display: inline-block; }
 
-  /* SECTION: CAMPAIGN CONCEPT */
+  /* CAMPAIGN CONCEPT */
   .section-concept {
     padding: 120px 60px;
     display: grid;
@@ -408,7 +461,7 @@
     margin-bottom: 4px;
   }
 
-  /* AI TOOLS SECTION */
+  /* AI TOOLS */
   .section-ai {
     padding: 120px 60px;
     border-top: 1px solid rgba(0,0,0,0.08);
@@ -423,7 +476,6 @@
   .ai-card {
     padding: 40px 32px;
     border-right: 1.5px solid var(--black);
-    position: relative;
   }
   .ai-card:last-child { border-right: none; }
   .ai-tool-name {
@@ -467,7 +519,6 @@
   .copy-card {
     background: white;
     padding: 40px;
-    position: relative;
   }
   .copy-type {
     font-size: 0.6rem;
@@ -550,7 +601,7 @@
     line-height: 1.8;
   }
 
-  /* SECTION DIVIDER */
+  /* DIVIDER */
   .divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--hot), transparent);
@@ -585,31 +636,15 @@
   .reveal-delay-1 { transition-delay: 0.1s; }
   .reveal-delay-2 { transition-delay: 0.2s; }
   .reveal-delay-3 { transition-delay: 0.35s; }
-.hero-img-box::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(10,10,10,0.15),
-    rgba(10,10,10,0.10)
-  );
-  z-index: 1;
-}
 
-.hero-img-box img {
-  position: relative;
-  z-index: 0;
-}
-
-.floating-tag {
-  z-index: 2;
-}
+  /* RESPONSIVE */
   @media (max-width: 900px) {
     .hero { grid-template-columns: 1fr; }
     .hero-right { height: 50vh; }
     nav { padding: 20px 24px; }
     .nav-links { display: none; }
+    .hero-left { padding: 100px 24px 60px; }
+    .hero-player { max-width: 100%; }
     .section-concept { grid-template-columns: 1fr; padding: 80px 24px; gap: 40px; }
     .tiktok-grid { grid-template-columns: 1fr; }
     .ai-grid { grid-template-columns: 1fr 1fr; }
@@ -619,134 +654,6 @@
     footer { flex-direction: column; gap: 24px; text-align: center; padding: 40px 24px; }
     .footer-note { text-align: center; }
   }
-   <style id="PASTE-INTO-EXISTING-STYLE-TAG">
-  /* STICKY AUDIO PLAYER */
-  .audio-player {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    z-index: 999;
-    background: rgba(10, 10, 10, 0.92);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid rgba(255,255,255,0.08);
-    padding: 0 40px;
-    height: 72px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    transform: translateY(100%);
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .audio-player.visible {
-    transform: translateY(0);
-  }
-  .player-artwork {
-    width: 44px;
-    height: 44px;
-    border-radius: 4px;
-    object-fit: cover;
-    flex-shrink: 0;
-  }
-  .player-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex-shrink: 0;
-  }
-  .player-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 0.08em;
-    color: #fff;
-    line-height: 1;
-  }
-  .player-subtitle {
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.4);
-  }
-  .player-btn {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    background: #FF3366;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: transform 0.15s, background 0.2s;
-  }
-  .player-btn:hover {
-    transform: scale(1.08);
-    background: #ff1a55;
-  }
-  .player-btn svg {
-    width: 16px; height: 16px;
-    fill: white;
-  }
-  .player-progress-wrap {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .player-progress-bar {
-    width: 100%;
-    height: 3px;
-    background: rgba(255,255,255,0.12);
-    border-radius: 2px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .player-progress-fill {
-    height: 100%;
-    background: #FF3366;
-    border-radius: 2px;
-    width: 0%;
-    transition: width 0.1s linear;
-    pointer-events: none;
-  }
-  .player-times {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.6rem;
-    color: rgba(255,255,255,0.3);
-    letter-spacing: 0.05em;
-  }
-  .player-loop-badge {
-    font-size: 0.58rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #FF3366;
-    background: rgba(255,51,102,0.1);
-    padding: 4px 10px;
-    border-radius: 2px;
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-  .player-close {
-    background: none;
-    border: none;
-    color: rgba(255,255,255,0.3);
-    cursor: pointer;
-    font-size: 1.2rem;
-    line-height: 1;
-    padding: 4px;
-    flex-shrink: 0;
-    transition: color 0.2s;
-  }
-  .player-close:hover { color: white; }
-
-  @media (max-width: 600px) {
-    .audio-player { padding: 0 16px; gap: 12px; }
-    .player-artwork { width: 36px; height: 36px; }
-    .player-loop-badge { display: none; }
-    .player-times { display: none; }
-  }
-</style>
 </style>
 </head>
 <body>
@@ -777,19 +684,43 @@
       <a href="#concept" class="btn-primary">See the campaign</a>
       <a href="#ai" class="btn-ghost">AI breakdown →</a>
     </div>
+
+    <!-- AUDIO PLAYER — sits right below the buttons in the hero -->
+    <div class="hero-player">
+      <button class="hp-btn" id="playBtn" onclick="togglePlay()" aria-label="Play">
+        <svg id="iconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="iconPause" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+      <div class="hp-info">
+        <div class="hp-title">STATIC — Chorus Preview</div>
+        <div class="hp-label">Zara Vale · AI-Generated via Suno</div>
+      </div>
+      <div class="hp-progress-wrap">
+        <div class="hp-bar" id="hpBar" onclick="seekAudio(event)">
+          <div class="hp-fill" id="hpFill"></div>
+        </div>
+        <div class="hp-times">
+          <span id="hpCurrent">0:00</span>
+          <span id="hpTotal">0:30</span>
+        </div>
+      </div>
+    </div>
   </div>
+
   <div class="hero-right">
     <div class="hero-img-box">
       <div class="artist-visual">
-      <img src="zara-artwork.png" alt="Zara Vale" class="hero-image">
-</div>
+        <img src="zara-artwork.png" alt="Zara Vale" class="hero-image">
       </div>
-      <div class="floating-tag tag1">✦ New Single</div>
-      <div class="floating-tag tag2">TikTok First</div>
-      <div class="floating-tag tag3">Drop: Apr 2025</div>
     </div>
+    <div class="floating-tag tag1">✦ New Single</div>
+    <div class="floating-tag tag2">TikTok First</div>
+    <div class="floating-tag tag3">Drop: Apr 2025</div>
   </div>
 </section>
+
+<!-- AUDIO ELEMENT -->
+<audio id="audioEl" src="static-chorus.mp3" preload="metadata"></audio>
 
 <!-- TICKER -->
 <div class="ticker">
@@ -1046,7 +977,7 @@
   </div>
   <div class="footer-note">
     Mock campaign — portfolio case study<br>
-    All content AI-assisted via Claude + Midjourney<br>
+    All content AI-assisted via Claude + Gemini + Suno<br>
     Concept, copy & strategy by Vanda Andrian<br>
     © 2025
   </div>
@@ -1056,15 +987,12 @@
   // Custom cursor
   const cursor = document.getElementById('cursor');
   const ring = document.getElementById('cursorRing');
-  let mouseX = 0, mouseY = 0;
-  let ringX = 0, ringY = 0;
-
+  let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
   document.addEventListener('mousemove', e => {
     mouseX = e.clientX; mouseY = e.clientY;
     cursor.style.left = mouseX + 'px';
     cursor.style.top = mouseY + 'px';
   });
-
   function animateRing() {
     ringX += (mouseX - ringX) * 0.12;
     ringY += (mouseY - ringY) * 0.12;
@@ -1077,52 +1005,17 @@
   // Scroll reveal
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('visible'); }
-    });
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.12 });
   reveals.forEach(el => observer.observe(el));
-</script>
-  <!-- STICKY AUDIO PLAYER -->
-<div class="audio-player" id="audioPlayer">
-  <img class="player-artwork" src="zara-artwork.png" alt="Static artwork">
-  <div class="player-info">
-    <div class="player-title">STATIC</div>
-    <div class="player-subtitle">Zara Vale · Chorus Preview</div>
-  </div>
-  <button class="player-btn" id="playBtn" onclick="togglePlay()" aria-label="Play">
-    <!-- Play icon -->
-    <svg id="iconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-    <!-- Pause icon (hidden by default) -->
-    <svg id="iconPause" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-  </button>
-  <div class="player-progress-wrap">
-    <div class="player-progress-bar" id="progressBar" onclick="seekAudio(event)">
-      <div class="player-progress-fill" id="progressFill"></div>
-    </div>
-    <div class="player-times">
-      <span id="timeCurrentEl">0:00</span>
-      <span id="timeTotalEl">0:30</span>
-    </div>
-  </div>
-  <div class="player-loop-badge">🔁 Chorus Loop</div>
-  <button class="player-close" onclick="closePlayer()" aria-label="Close">✕</button>
-</div>
 
-<!-- Audio element — update src to your actual filename -->
-<audio id="audioEl" src="static-chorus.mp3" preload="metadata"></audio>
-  <script id="PASTE-AFTER-PLAYER-HTML">
+  // Audio player
   const audio = document.getElementById('audioEl');
-  const player = document.getElementById('audioPlayer');
-  const playBtn = document.getElementById('playBtn');
   const iconPlay = document.getElementById('iconPlay');
   const iconPause = document.getElementById('iconPause');
-  const progressFill = document.getElementById('progressFill');
-  const timeCurrent = document.getElementById('timeCurrentEl');
-  const timeTotal = document.getElementById('timeTotalEl');
-
-  // Show player after 3 seconds on page load
-  setTimeout(() => player.classList.add('visible'), 3000);
+  const hpFill = document.getElementById('hpFill');
+  const hpCurrent = document.getElementById('hpCurrent');
+  const hpTotal = document.getElementById('hpTotal');
 
   function togglePlay() {
     if (audio.paused) {
@@ -1136,11 +1029,6 @@
     }
   }
 
-  function closePlayer() {
-    audio.pause();
-    player.classList.remove('visible');
-  }
-
   function formatTime(s) {
     const m = Math.floor(s / 60);
     const sec = Math.floor(s % 60).toString().padStart(2, '0');
@@ -1148,7 +1036,7 @@
   }
 
   function seekAudio(e) {
-    const bar = document.getElementById('progressBar');
+    const bar = document.getElementById('hpBar');
     const rect = bar.getBoundingClientRect();
     const ratio = (e.clientX - rect.left) / rect.width;
     audio.currentTime = ratio * audio.duration;
@@ -1156,16 +1044,15 @@
 
   audio.addEventListener('timeupdate', () => {
     if (!audio.duration) return;
-    const pct = (audio.currentTime / audio.duration) * 100;
-    progressFill.style.width = pct + '%';
-    timeCurrent.textContent = formatTime(audio.currentTime);
+    hpFill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+    hpCurrent.textContent = formatTime(audio.currentTime);
   });
 
   audio.addEventListener('loadedmetadata', () => {
-    timeTotal.textContent = formatTime(audio.duration);
+    hpTotal.textContent = formatTime(audio.duration);
   });
 
-  // Loop back to start when chorus ends
+  // Loop the chorus
   audio.addEventListener('ended', () => {
     audio.currentTime = 0;
     audio.play();
