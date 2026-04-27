@@ -6,6 +6,134 @@
 <title>ZARA VALE — STATIC</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
+  <style id="PASTE-INTO-EXISTING-STYLE-TAG">
+  /* STICKY AUDIO PLAYER */
+  .audio-player {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 999;
+    background: rgba(10, 10, 10, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 0 40px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transform: translateY(100%);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .audio-player.visible {
+    transform: translateY(0);
+  }
+  .player-artwork {
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .player-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .player-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    color: #fff;
+    line-height: 1;
+  }
+  .player-subtitle {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+  .player-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #FF3366;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.15s, background 0.2s;
+  }
+  .player-btn:hover {
+    transform: scale(1.08);
+    background: #ff1a55;
+  }
+  .player-btn svg {
+    width: 16px; height: 16px;
+    fill: white;
+  }
+  .player-progress-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .player-progress-bar {
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .player-progress-fill {
+    height: 100%;
+    background: #FF3366;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.1s linear;
+    pointer-events: none;
+  }
+  .player-times {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.05em;
+  }
+  .player-loop-badge {
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #FF3366;
+    background: rgba(255,51,102,0.1);
+    padding: 4px 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .player-close {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.3);
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 4px;
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+  .player-close:hover { color: white; }
+
+  @media (max-width: 600px) {
+    .audio-player { padding: 0 16px; gap: 12px; }
+    .player-artwork { width: 36px; height: 36px; }
+    .player-loop-badge { display: none; }
+    .player-times { display: none; }
+  }
+</style>
   :root {
     --cream: #F5F0E8;
     --hot: #FF3366;
@@ -954,6 +1082,94 @@
     });
   }, { threshold: 0.12 });
   reveals.forEach(el => observer.observe(el));
+</script>
+  <!-- STICKY AUDIO PLAYER -->
+<div class="audio-player" id="audioPlayer">
+  <img class="player-artwork" src="zara-artwork.png" alt="Static artwork">
+  <div class="player-info">
+    <div class="player-title">STATIC</div>
+    <div class="player-subtitle">Zara Vale · Chorus Preview</div>
+  </div>
+  <button class="player-btn" id="playBtn" onclick="togglePlay()" aria-label="Play">
+    <!-- Play icon -->
+    <svg id="iconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    <!-- Pause icon (hidden by default) -->
+    <svg id="iconPause" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+  </button>
+  <div class="player-progress-wrap">
+    <div class="player-progress-bar" id="progressBar" onclick="seekAudio(event)">
+      <div class="player-progress-fill" id="progressFill"></div>
+    </div>
+    <div class="player-times">
+      <span id="timeCurrentEl">0:00</span>
+      <span id="timeTotalEl">0:30</span>
+    </div>
+  </div>
+  <div class="player-loop-badge">🔁 Chorus Loop</div>
+  <button class="player-close" onclick="closePlayer()" aria-label="Close">✕</button>
+</div>
+
+<!-- Audio element — update src to your actual filename -->
+<audio id="audioEl" src="static-chorus.mp3" preload="metadata"></audio>
+  <script id="PASTE-AFTER-PLAYER-HTML">
+  const audio = document.getElementById('audioEl');
+  const player = document.getElementById('audioPlayer');
+  const playBtn = document.getElementById('playBtn');
+  const iconPlay = document.getElementById('iconPlay');
+  const iconPause = document.getElementById('iconPause');
+  const progressFill = document.getElementById('progressFill');
+  const timeCurrent = document.getElementById('timeCurrentEl');
+  const timeTotal = document.getElementById('timeTotalEl');
+
+  // Show player after 3 seconds on page load
+  setTimeout(() => player.classList.add('visible'), 3000);
+
+  function togglePlay() {
+    if (audio.paused) {
+      audio.play();
+      iconPlay.style.display = 'none';
+      iconPause.style.display = 'block';
+    } else {
+      audio.pause();
+      iconPlay.style.display = 'block';
+      iconPause.style.display = 'none';
+    }
+  }
+
+  function closePlayer() {
+    audio.pause();
+    player.classList.remove('visible');
+  }
+
+  function formatTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60).toString().padStart(2, '0');
+    return `${m}:${sec}`;
+  }
+
+  function seekAudio(e) {
+    const bar = document.getElementById('progressBar');
+    const rect = bar.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = ratio * audio.duration;
+  }
+
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    progressFill.style.width = pct + '%';
+    timeCurrent.textContent = formatTime(audio.currentTime);
+  });
+
+  audio.addEventListener('loadedmetadata', () => {
+    timeTotal.textContent = formatTime(audio.duration);
+  });
+
+  // Loop back to start when chorus ends
+  audio.addEventListener('ended', () => {
+    audio.currentTime = 0;
+    audio.play();
+  });
 </script>
 </body>
 </html>
