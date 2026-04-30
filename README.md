@@ -1,6 +1,6 @@
 # Vanda Andrian — Digital Marketing Portfolio
 
-**Live site:** [vandarian-test.netlify.app](https://vandarian-test.netlify.app)
+**Live site:** [vandrian.netlify.app](https://vandrian.netlify.app)
 
 A portfolio of AI-assisted marketing and data projects, built to demonstrate hands-on capability with AI tools, Python data analysis, and audience research methodology. Deployed via Netlify.
 
