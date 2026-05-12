@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tottenham Hotspur — Relegation Financial Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --navy: #0A1628;
+  --navy-mid: #132040;
+  --navy-light: #1C2E55;
+  --white: #F5F3EE;
+  --white-dim: rgba(245,243,238,0.6);
+  --white-faint: rgba(245,243,238,0.12);
+  --white-faint2: rgba(245,243,238,0.06);
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --gold-dim: rgba(201,168,76,0.2);
+  --red: #C0392B;
+  --red-dim: rgba(192,57,43,0.2);
+  --green: #27AE60;
+  --green-dim: rgba(39,174,96,0.18);
+  --amber: #E67E22;
+  --border: rgba(245,243,238,0.1);
+  --border-gold: rgba(201,168,76,0.3);
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* background texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(28,46,85,0.8) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(201,168,76,0.06) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+/* HEADER */
+header {
+  padding: 3rem 0 2rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2.5rem;
+}
+
+.header-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; }
+
+.header-left {}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 24px; height: 1px;
+  background: var(--gold);
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: var(--white);
+}
+
+h1 em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.header-meta {
+  font-size: 13px;
+  color: var(--white-dim);
+  margin-top: 1rem;
+  font-weight: 300;
+  max-width: 540px;
+  line-height: 1.7;
+}
+
+.disclaimer {
+  background: var(--white-faint2);
+  border: 1px solid var(--border-gold);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  max-width: 220px;
+  line-height: 1.6;
+}
+
+/* SUMMARY CARDS */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 12px;
+  margin-bottom: 2rem;
+}
+
+.scard {
+  background: var(--white-faint2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+  transition: border-color 0.2s;
+}
+.scard:hover { border-color: var(--border-gold); }
+
+.scard-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  margin-bottom: 6px;
+}
+
+.scard-val {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1;
+}
+.scard-val.danger { color: #E74C3C; }
+.scard-val.warning { color: var(--amber); }
+.scard-val.success { color: var(--green); }
+.scard-val.neutral { color: var(--white); }
+
+/* TABS */
+.tabs-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.tab-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 10px 22px;
+  background: transparent;
+  border: none;
+  color: var(--white-dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.tab-btn:hover { color: var(--white); }
+.tab-btn.on { color: var(--gold); border-bottom-color: var(--gold); }
+
+.pane { display: none; }
+.pane.on { display: block; }
+
+/* TWO COL */
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1.5rem; }
+
+/* CARDS */
+.card {
+  background: var(--white-faint2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 14px;
+}
+.card:last-child { margin-bottom: 0; }
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-gold);
+}
+
+/* SLIDERS */
+.sr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.sr:last-child { margin-bottom: 0; }
+.sr label {
+  font-size: 12px;
+  color: var(--white-dim);
+  font-weight: 300;
+  flex: 0 0 200px;
+}
+.sr input[type=range] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  background: var(--white-faint);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.sr input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.sr input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.sv {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gold);
+  min-width: 52px;
+  text-align: right;
+}
+
+/* DATA LINES */
+.dline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.dline:last-child { border-bottom: none; }
+.dl { color: var(--white-dim); font-weight: 300; }
+.dv { font-weight: 500; color: var(--white); }
+.dv.danger { color: #E74C3C; }
+.dv.success { color: var(--green); }
+
+/* BADGES */
+.fbadge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(201,168,76,0.15);
+  color: var(--gold);
+  font-weight: 400;
+  margin-left: 5px;
+  letter-spacing: 0.06em;
+}
+.vbadge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(52,152,219,0.15);
+  color: #85B7EB;
+  font-weight: 400;
+  margin-left: 5px;
+  letter-spacing: 0.06em;
+}
+
+/* CALLOUT */
+.callout {
+  background: rgba(192,57,43,0.1);
+  border-left: 3px solid #C0392B;
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #F1948A;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* PLAYER GRID */
+.player-list { display: flex; flex-direction: column; gap: 0; max-height: 440px; overflow-y: auto; }
+.player-list::-webkit-scrollbar { width: 3px; }
+.player-list::-webkit-scrollbar-track { background: transparent; }
+.player-list::-webkit-scrollbar-thumb { background: var(--border-gold); border-radius: 2px; }
+
+.pcard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+.pcard:last-child { border-bottom: none; }
+.pcard:hover { background: var(--white-faint2); }
+
+.pav {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.pn { font-size: 13px; font-weight: 500; color: var(--white); }
+.prole { font-size: 11px; color: var(--white-dim); font-weight: 300; }
+.pval { text-align: right; flex-shrink: 0; }
+.pv { font-family: var(--font-mono); font-size: 13px; font-weight: 500; color: var(--white); }
+.pv.sel-on { color: var(--gold); }
+.pw { font-size: 11px; color: var(--white-dim); text-decoration: line-through; opacity: 0.5; }
+.pchk {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(245,243,238,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  color: transparent;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.pcard.sel .pchk { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+.pcard.sel .pv { color: var(--gold); }
+
+.pbtn-row { display: flex; gap: 6px; margin-bottom: 10px; }
+.pbtn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--white-dim);
+  letter-spacing: 0.05em;
+  transition: all 0.15s;
+}
+.pbtn:hover { border-color: var(--gold); color: var(--gold); }
+
+/* SPONSOR ITEMS */
+.sitem {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.sitem:last-child { border-bottom: none; }
+.sdot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.sn { flex: 1; color: var(--white-dim); font-weight: 300; }
+.spl { font-family: var(--font-mono); font-size: 11px; color: var(--white-dim); margin-right: 4px; }
+.sch2 { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--gold); min-width: 44px; text-align: right; }
+
+/* YEAR TABS */
+.ytabs { display: flex; gap: 6px; margin-bottom: 1.25rem; }
+.ytab {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--white-dim);
+  letter-spacing: 0.06em;
+  transition: all 0.15s;
+}
+.ytab:hover { border-color: var(--gold); color: var(--gold); }
+.ytab.on { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+
+/* P&L TABLE */
+.pltable { width: 100%; border-collapse: collapse; font-size: 13px; }
+.pltable td { padding: 6px 4px; border-bottom: 1px solid var(--border); }
+.pltable td:last-child { text-align: right; font-family: var(--font-mono); font-weight: 500; }
+.pltable tr.divr td { padding: 3px 0; border-bottom: none; }
+.divr-line { border-top: 1px solid var(--border); }
+.pltable tr.total-row td { font-size: 14px; font-weight: 500; }
+.pltable tr:last-child td { border-bottom: none; }
+
+/* CHARTS */
+.chart-wrap { position: relative; width: 100%; }
+
+/* LEGEND */
+.leg { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 8px; font-size: 12px; color: var(--white-dim); }
+.leg span { display: flex; align-items: center; gap: 5px; }
+.lb { width: 10px; height: 10px; border-radius: 2px; }
+
+/* NOTE */
+.note { font-size: 11px; color: var(--white-dim); font-weight: 300; margin-top: 8px; font-style: italic; }
+
+/* FOOTER */
+footer {
+  margin-top: 4rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+.footer-note {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--white-dim);
+  letter-spacing: 0.04em;
+  line-height: 1.8;
+}
+.footer-tag {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+}
+
+/* SCROLL FIX */
+.scroll-x { overflow-x: auto; }
+
+@media (max-width: 740px) {
+  .two { grid-template-columns: 1fr; }
+  .summary-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .header-inner { flex-direction: column; align-items: flex-start; }
+  .disclaimer { max-width: 100%; }
+  h1 { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="header-inner">
+      <div class="header-left">
+        <div class="eyebrow">Marketing &amp; Finance Analysis · Portfolio Project</div>
+        <h1>If Spurs go down,<br><em>what happens to the money?</em></h1>
+        <p class="header-meta">
+          An interactive financial model projecting the three-year P&amp;L impact of Tottenham Hotspur's relegation to the Championship — modelling revenue losses, fixed debt obligations, player sales, and sponsorship collapse.
+        </p>
+      </div>
+      <div class="disclaimer">
+        ⚠ Hypothetical scenario. All figures based on publicly available financial data, club accounts, and reported estimates as of May 2026.
+      </div>
+    </div>
+  </header>
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary-grid" id="mc"></div>
+
+  <!-- TABS -->
+  <div class="tabs-bar">
+    <button class="tab-btn on" onclick="sw(0,this)">01 — Revenue</button>
+    <button class="tab-btn" onclick="sw(1,this)">02 — Player sales</button>
+    <button class="tab-btn" onclick="sw(2,this)">03 — Fixed costs</button>
+    <button class="tab-btn" onclick="sw(3,this)">04 — P&amp;L projection</button>
+  </div>
+
+  <!-- PANE 0: REVENUE -->
+  <div class="pane on" id="p0">
+    <div class="two">
+      <div>
+        <p class="section-label">Broadcast &amp; matchday</p>
+        <div class="card">
+          <div class="sr">
+            <label>Broadcast revenue retained</label>
+            <input type="range" id="bcast" min="10" max="40" value="22" step="1">
+            <span class="sv" id="bcastv">22%</span>
+          </div>
+          <p class="note">PL broadcast deal: ~£195m/yr. Championship equivalent: ~£25–45m. No UEFA participation.</p>
+          <div style="height:12px;"></div>
+          <div class="sr">
+            <label>Matchday revenue retained</label>
+            <input type="range" id="mday" min="40" max="80" value="60" step="1">
+            <span class="sv" id="mdayv">60%</span>
+          </div>
+          <p class="note">PL matchday: ~£110m. Championship crowds 40–60% lower; same fixed stadium costs.</p>
+          <div style="height:12px;"></div>
+          <div class="sr">
+            <label>Parachute payment (year 1)</label>
+            <input type="range" id="para" min="40" max="60" value="49" step="1">
+            <span class="sv" id="parav">£49m</span>
+          </div>
+          <p class="note">Year 1: ~£49m · Year 2: ~£40m · Year 3: ~£20m. Fixed per Premier League rules.</p>
+        </div>
+
+        <p class="section-label">Non-football stadium revenue</p>
+        <div class="card">
+          <div class="sr">
+            <label>NFL / concerts / events retained</label>
+            <input type="range" id="evts" min="60" max="100" value="85" step="1">
+            <span class="sv" id="evtsv">85%</span>
+          </div>
+          <p class="note">Spurs' stadium hosts NFL games, boxing and concerts independent of league status — a meaningful buffer unavailable to most clubs.</p>
+        </div>
+      </div>
+
+      <div>
+        <p class="section-label">Sponsorship — PL vs Championship</p>
+        <div class="card">
+          <div id="slist"></div>
+          <div style="height:12px;"></div>
+          <div class="sr">
+            <label>AIA shirt deal (runs to 2027)</label>
+            <input type="range" id="aR" min="0" max="100" value="60" step="5">
+            <span class="sv" id="aRv">60%</span>
+          </div>
+          <div class="sr">
+            <label>Sleeve / training kit deals</label>
+            <input type="range" id="slR" min="0" max="100" value="50" step="5">
+            <span class="sv" id="slRv">50%</span>
+          </div>
+          <div class="sr">
+            <label>Stadium area sponsors</label>
+            <input type="range" id="stR" min="0" max="100" value="70" step="5">
+            <span class="sv" id="stRv">70%</span>
+          </div>
+          <div class="sr">
+            <label>Kit &amp; other commercial partners</label>
+            <input type="range" id="oR" min="0" max="100" value="40" step="5">
+            <span class="sv" id="oRv">40%</span>
+          </div>
+          <p class="note">Most sponsorship contracts include relegation break clauses or renegotiation rights. AIA's contract runs to 2026/27 and may offer partial protection.</p>
+        </div>
+
+        <p class="section-label">Year 1 revenue summary</p>
+        <div class="card" id="revsum"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANE 1: PLAYER SALES -->
+  <div class="pane" id="p1">
+    <div class="two">
+      <div>
+        <p class="section-label">Select players sold</p>
+        <div class="pbtn-row">
+          <button class="pbtn" onclick="selAll()">Select all</button>
+          <button class="pbtn" onclick="selNone()">Clear</button>
+          <button class="pbtn" onclick="selLikely()">Likely leavers</button>
+        </div>
+        <div class="card">
+          <div class="player-list" id="pgrid"></div>
+        </div>
+        <p class="note" style="margin-top:8px;">Sources: The Athletic, Transfermarkt, reported figures May 2026. Wage figures are approximate weekly rates per public reporting.</p>
+      </div>
+      <div>
+        <p class="section-label">Sale assumptions</p>
+        <div class="card">
+          <div class="sr">
+            <label>Fire-sale discount on valuations</label>
+            <input type="range" id="disc" min="0" max="50" value="25" step="5">
+            <span class="sv" id="discv">25%</span>
+          </div>
+          <p class="note">In a relegation fire-sale, clubs negotiate from weakness. Expect 20–30% below market value for most players, more for those with injury histories.</p>
+        </div>
+
+        <p class="section-label">Player sales summary</p>
+        <div class="card" id="psumm"></div>
+
+        <p class="section-label">Annual wage savings from exits</p>
+        <div class="card" id="wsumm"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANE 2: FIXED COSTS -->
+  <div class="pane" id="p2">
+    <div class="two">
+      <div>
+        <p class="section-label">Stadium debt — cannot be renegotiated</p>
+        <div class="card">
+          <div class="dline"><span class="dl">Total borrowings</span><span class="dv">£851.7m <span class="fbadge">FIXED RATE</span></span></div>
+          <div class="dline"><span class="dl">Average interest rate</span><span class="dv">3.07% p.a.</span></div>
+          <div class="dline"><span class="dl">Annual interest charge</span><span class="dv danger">≈ £26m / yr</span></div>
+          <div class="dline"><span class="dl">Estimated principal repayment</span><span class="dv danger">≈ £22m / yr</span></div>
+          <div class="dline"><span class="dl">Loan maturities</span><span class="dv">17.6 yr avg — some to 2051</span></div>
+          <div class="dline" style="border-top:1px solid rgba(201,168,76,0.3);margin-top:6px;padding-top:8px;">
+            <span class="dl" style="font-weight:500;color:var(--white);">Total annual debt cost</span>
+            <span class="dv danger" style="font-size:16px;">≈ £48m / yr <span class="fbadge">FIXED</span></span>
+          </div>
+          <div class="callout">
+            Relegation changes nothing here. This £48m/yr obligation was structured at fixed rates and runs to 2051. Every pound of revenue Spurs lose still leaves this demand on the books.
+          </div>
+        </div>
+
+        <p class="section-label">Player amortisation</p>
+        <div class="card">
+          <div class="dline"><span class="dl">Current squad amortisation</span><span class="dv">≈ £90m / yr <span class="vbadge">VARIABLE</span></span></div>
+          <div style="height:10px;"></div>
+          <div class="sr">
+            <label>Reduction from player sales</label>
+            <input type="range" id="amor" min="0" max="60" value="30" step="5">
+            <span class="sv" id="amorv">30%</span>
+          </div>
+          <p class="note">Each player sold removes their remaining book value from the amortisation schedule. The discount depends on contract length and original purchase price.</p>
+        </div>
+      </div>
+
+      <div>
+        <p class="section-label">Variable cost controls</p>
+        <div class="card">
+          <div class="dline" style="margin-bottom:8px;"><span class="dl">Current wage bill</span><span class="dv">≈ £260m / yr <span class="vbadge">VARIABLE</span></span></div>
+          <div class="sr">
+            <label>Wage cut via relegation clauses</label>
+            <input type="range" id="wcut" min="20" max="50" value="40" step="1">
+            <span class="sv" id="wcutv">40%</span>
+          </div>
+          <p class="note">Most PL contracts include relegation clauses reducing wages by up to 50%. This applies to remaining squad only — sold players are already excluded.</p>
+          <div style="height:14px;"></div>
+          <div class="dline" style="margin-bottom:8px;"><span class="dl">Other operating costs</span><span class="dv">≈ £120m / yr <span class="vbadge">VARIABLE</span></span></div>
+          <div class="sr">
+            <label>Operating cost reduction</label>
+            <input type="range" id="opex" min="5" max="30" value="15" step="1">
+            <span class="sv" id="opexv">15%</span>
+          </div>
+          <p class="note">Covers training, staffing, infrastructure, and administrative costs. Some reduction possible; core costs are difficult to cut quickly.</p>
+        </div>
+
+        <p class="section-label">Fixed vs variable cost breakdown</p>
+        <div class="card">
+          <div class="leg">
+            <span><span class="lb" style="background:#C9A84C"></span>Fixed (debt + amortisation)</span>
+            <span><span class="lb" style="background:#85B7EB"></span>Variable (wages + opex)</span>
+          </div>
+          <div class="chart-wrap" style="height:220px;"><canvas id="costChart" role="img" aria-label="Fixed vs variable cost breakdown"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANE 3: P&L PROJECTION -->
+  <div class="pane" id="p3">
+    <div class="ytabs">
+      <button class="ytab on" onclick="setYr(1,this)">Year 1 — Championship</button>
+      <button class="ytab" onclick="setYr(2,this)">Year 2 — Championship</button>
+      <button class="ytab" onclick="setYr(3,this)">Year 3 — Survival or promotion</button>
+    </div>
+    <div class="two">
+      <div>
+        <p class="section-label">Detailed P&amp;L</p>
+        <div class="card">
+          <table class="pltable" id="plTable"></table>
+        </div>
+        <p class="note" style="margin-top:8px;">Player sales proceeds are recognised in Year 1 only. Broadcast and commercial revenue degrades further in Years 2–3 if club remains in Championship.</p>
+      </div>
+      <div>
+        <p class="section-label">3-year net position</p>
+        <div class="leg">
+          <span><span class="lb" style="background:#378ADD"></span>Revenue</span>
+          <span><span class="lb" style="background:#C0392B"></span>Total costs</span>
+          <span><span class="lb" style="background:#27AE60"></span>Net surplus</span>
+          <span><span class="lb" style="background:#E74C3C"></span>Net deficit</span>
+        </div>
+        <div class="chart-wrap" style="height:220px;margin-bottom:1rem;"><canvas id="plChart" role="img" aria-label="3-year P&L projection"></canvas></div>
+
+        <p class="section-label">Cost stack — year 1</p>
+        <div class="leg">
+          <span><span class="lb" style="background:#85B7EB"></span>Wages</span>
+          <span><span class="lb" style="background:#B5D4F4"></span>Opex</span>
+          <span><span class="lb" style="background:#EF9F27"></span>Amortisation</span>
+          <span><span class="lb" style="background:#C9A84C"></span>Debt service</span>
+        </div>
+        <div class="chart-wrap" style="height:90px;"><canvas id="costStack" role="img" aria-label="Year 1 cost breakdown"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-note">
+      Data sources: Tottenham Hotspur PLC accounts (FY2025) · The Athletic · Transfermarkt · Sportcal · Deloitte Football Money League<br>
+      All projections are hypothetical scenarios for illustrative purposes only. Not financial advice.
+    </div>
+    <div class="footer-tag">Portfolio / Vanda · 2026</div>
+  </footer>
+
+</div>
+
+<script>
+const BASE={broadcast:195,matchday:110,events:80,wages:260,opexBase:120,amor:90,debtPA:48,parachute:[49,40,20]};
+const SPONS=[
+  {n:'AIA — shirt sponsor (to 2026/27)',pl:40,key:'aR',dot:'#C9A84C'},
+  {n:'Sleeve / training kit (AIA + Kraken)',pl:18,key:'slR',dot:'#85B7EB'},
+  {n:'Stadium area sponsors',pl:15,key:'stR',dot:'#7F77DD'},
+  {n:'Kit (Nike) &amp; other partners',pl:32,key:'oR',dot:'#D85A30'},
+];
+const PLAYERS=[
+  {n:'Micky van de Ven',pos:'DEF',val:100,wk:120,likely:true,ini:'MV',bg:'#1C2E55',tc:'#85B7EB'},
+  {n:'Cristian Romero',pos:'DEF',val:52,wk:130,likely:true,ini:'CR',bg:'#1C2E55',tc:'#85B7EB'},
+  {n:'Xavi Simons',pos:'MID',val:80,wk:150,likely:true,ini:'XS',bg:'#132040',tc:'#C9A84C'},
+  {n:'Destiny Udogie',pos:'DEF',val:55,wk:80,likely:true,ini:'DU',bg:'#1C2E55',tc:'#85B7EB'},
+  {n:'Archie Gray',pos:'MID',val:55,wk:60,likely:true,ini:'AG',bg:'#132040',tc:'#C9A84C'},
+  {n:'James Maddison',pos:'MID',val:35,wk:200,likely:true,ini:'JM',bg:'#132040',tc:'#C9A84C'},
+  {n:'Pedro Porro',pos:'DEF',val:40,wk:90,likely:true,ini:'PP',bg:'#1C2E55',tc:'#85B7EB'},
+  {n:'Mohammed Kudus',pos:'FWD',val:45,wk:110,likely:true,ini:'MK',bg:'#2A1A0A',tc:'#EF9F27'},
+  {n:'Dejan Kulusevski',pos:'FWD',val:38,wk:100,likely:true,ini:'DK',bg:'#2A1A0A',tc:'#EF9F27'},
+  {n:'Conor Gallagher',pos:'MID',val:35,wk:120,likely:true,ini:'CG',bg:'#132040',tc:'#C9A84C'},
+  {n:'Guglielmo Vicario',pos:'GK',val:32,wk:75,likely:true,ini:'GV',bg:'#1A2A0A',tc:'#7DB55C'},
+  {n:'Dominic Solanke',pos:'FWD',val:28,wk:115,likely:true,ini:'DS',bg:'#2A1A0A',tc:'#EF9F27'},
+  {n:'Lucas Bergvall',pos:'MID',val:30,wk:55,likely:false,ini:'LB',bg:'#132040',tc:'#C9A84C'},
+  {n:'Rodrigo Bentancur',pos:'MID',val:22,wk:90,likely:true,ini:'RB',bg:'#132040',tc:'#C9A84C'},
+  {n:'Richarlison',pos:'FWD',val:22,wk:185,likely:true,ini:'RI',bg:'#2A1A0A',tc:'#EF9F27'},
+  {n:'Kevin Danso',pos:'DEF',val:20,wk:65,likely:false,ini:'KD',bg:'#1C2E55',tc:'#85B7EB'},
+];
+
+let sel=new Set(PLAYERS.map((p,i)=>p.likely?i:-1).filter(i=>i>=0));
+let activeYr=1;
+let charts={};
+
+function gv(id){return parseInt(document.getElementById(id).value);}
+function gvp(id){return gv(id)/100;}
+
+function sponsorRetained(){
+  return SPONS.reduce((s,sp)=>s+Math.round(sp.pl*gvp(sp.key)),0);
+}
+function playerProceeds(){
+  const d=gvp('disc');
+  return [...sel].reduce((s,i)=>s+Math.round(PLAYERS[i].val*(1-d)),0);
+}
+function wageFreedPA(){
+  return Math.round([...sel].reduce((s,i)=>s+PLAYERS[i].wk,0)*52/1000);
+}
+
+function calcYear(y){
+  const bcast=Math.round(BASE.broadcast*gvp('bcast')*(y===1?1:y===2?.85:.72));
+  const mday=Math.round(BASE.matchday*gvp('mday'));
+  const events=Math.round(BASE.events*gvp('evts'));
+  const spons=Math.round(sponsorRetained()*(y===1?1:y===2?.9:.8));
+  const para=BASE.parachute[y-1];
+  const sales=y===1?playerProceeds():0;
+  const totalRev=bcast+mday+events+spons+para+sales;
+
+  const wages=Math.max(0,Math.round((BASE.wages*(1-gvp('wcut')))-wageFreedPA()));
+  const opex=Math.round(BASE.opexBase*(1-gvp('opex')));
+  const amor=Math.round(BASE.amor*(1-gvp('amor')));
+  const debt=BASE.debtPA;
+  const totalCosts=wages+opex+amor+debt;
+  const net=totalRev-totalCosts;
+  return{bcast,mday,events,spons,para,sales,totalRev,wages,opex,amor,debt,totalCosts,net};
+}
+
+function fmt(n,plus){return(n<0?'−£':plus&&n>0?'+£':'£')+Math.abs(n)+'m';}
+
+function updateMC(){
+  const y1=calcYear(1),y2=calcYear(2),y3=calcYear(3);
+  const items=[
+    {l:'Year 1 revenue',v:'£'+y1.totalRev+'m',c:y1.totalRev<350?'danger':y1.totalRev<420?'warning':'neutral'},
+    {l:'Year 1 net position',v:fmt(y1.net,true),c:y1.net<0?'danger':y1.net<30?'warning':'success'},
+    {l:'Year 2 net position',v:fmt(y2.net,true),c:y2.net<0?'danger':y2.net<30?'warning':'success'},
+    {l:'Year 3 net position',v:fmt(y3.net,true),c:y3.net<0?'danger':y3.net<30?'warning':'success'},
+  ];
+  document.getElementById('mc').innerHTML=items.map(m=>
+    `<div class="scard"><div class="scard-label">${m.l}</div><div class="scard-val ${m.c}">${m.v}</div></div>`
+  ).join('');
+}
+
+function updateRevSum(){
+  const y=calcYear(1);
+  document.getElementById('revsum').innerHTML=[
+    ['Broadcast',y.bcast],['Matchday',y.mday],['Sponsorship',y.spons],
+    ['Stadium events (NFL etc.)',y.events],['Parachute payment',y.para],['Player sales',y.sales],
+  ].map(([l,v])=>`<div class="dline"><span class="dl">${l}</span><span class="dv">£${v}m</span></div>`).join('')+
+  `<div class="dline" style="border-top:1px solid rgba(201,168,76,0.25);margin-top:4px;padding-top:8px;">
+    <span class="dl" style="color:var(--white);font-weight:500;">Total year 1 revenue</span>
+    <span class="dv" style="font-size:16px;color:var(--gold);">£${y.totalRev}m</span></div>`;
+}
+
+function updateSponsList(){
+  document.getElementById('slist').innerHTML=SPONS.map(sp=>{
+    const ch=Math.round(sp.pl*gvp(sp.key));
+    return`<div class="sitem"><div class="sdot" style="background:${sp.dot}"></div><span class="sn">${sp.n}</span><span class="spl">£${sp.pl}m PL</span><span class="sch2">£${ch}m</span></div>`;
+  }).join('');
+}
+
+function updatePlayerGrid(){
+  document.getElementById('pgrid').innerHTML=PLAYERS.map((p,i)=>{
+    const isSel=sel.has(i);
+    const net=Math.round(p.val*(1-gvp('disc')));
+    return`<div class="pcard ${isSel?'sel':''}" onclick="tog(${i})">
+      <div class="pav" style="background:${p.bg};color:${p.tc}">${p.ini}</div>
+      <div style="flex:1;min-width:0;"><div class="pn">${p.n}</div><div class="prole">${p.pos} · £${p.wk}k/wk</div></div>
+      <div class="pval"><div class="pv ${isSel?'sel-on':''}">£${net}m</div><div class="pw">£${p.val}m</div></div>
+      <div class="pchk">✓</div></div>`;
+  }).join('');
+}
+
+function updatePlayerSumm(){
+  const proc=playerProceeds(),wf=wageFreedPA(),cnt=[...sel].length;
+  const mktVal=[...sel].reduce((s,i)=>s+PLAYERS[i].val,0);
+  document.getElementById('psumm').innerHTML=[
+    ['Players selected',cnt+' / '+PLAYERS.length,''],
+    ['Combined market value','£'+mktVal+'m',''],
+    ['Fire-sale proceeds','£'+proc+'m','success'],
+    ['Value lost to discount','−£'+(mktVal-proc)+'m','danger'],
+  ].map(([l,v,c])=>`<div class="dline"><span class="dl">${l}</span><span class="dv ${c}">${v}</span></div>`).join('');
+
+  const top=[...sel].map(i=>PLAYERS[i]).sort((a,b)=>b.wk-a.wk).slice(0,5);
+  document.getElementById('wsumm').innerHTML=top.map(p=>
+    `<div class="dline"><span class="dl">${p.n}</span><span class="dv success">+£${Math.round(p.wk*52/1000)}m/yr</span></div>`
+  ).join('')+`<div class="dline" style="border-top:1px solid rgba(201,168,76,0.25);margin-top:4px;padding-top:8px;">
+    <span class="dl" style="color:var(--white);font-weight:500;">Total wage saving</span>
+    <span class="dv success" style="font-size:16px;">+£${wf}m / yr</span></div>`;
+}
+
+function updateCostChart(){
+  const y=calcYear(1);
+  if(charts.cost)charts.cost.destroy();
+  charts.cost=new Chart(document.getElementById('costChart'),{
+    type:'bar',
+    data:{
+      labels:['Stadium debt','Amortisation','Wages','Opex'],
+      datasets:[
+        {label:'Fixed',data:[y.debt,y.amor,0,0],backgroundColor:'#C9A84C',borderWidth:0,stack:'s'},
+        {label:'Variable',data:[0,0,y.wages,y.opex],backgroundColor:'#378ADD',borderWidth:0,stack:'s'},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'£'+ctx.parsed.y+'m'}}},
+      scales:{
+        x:{stacked:true,ticks:{color:'rgba(245,243,238,0.5)',font:{family:'DM Mono',size:11}},grid:{display:false},border:{color:'rgba(245,243,238,0.1)'}},
+        y:{stacked:true,ticks:{callback:v=>'£'+v+'m',color:'rgba(245,243,238,0.5)',font:{family:'DM Mono',size:11}},grid:{color:'rgba(245,243,238,0.06)'},border:{display:false}}
+      }
+    }
+  });
+}
+
+function updatePLTable(){
+  const y=calcYear(activeYr);
+  const rows=[
+    {l:'Broadcast revenue',v:'£'+y.bcast+'m',s:false},
+    {l:'Matchday revenue',v:'£'+y.mday+'m',s:false},
+    {l:'Sponsorship',v:'£'+y.spons+'m',s:false},
+    {l:'Stadium events',v:'£'+y.events+'m',s:false},
+    {l:'Parachute payment',v:'£'+y.para+'m',s:false},
+    {l:'Player sale proceeds',v:'£'+y.sales+'m',s:false},
+    {div:true},
+    {l:'Total revenue',v:'£'+y.totalRev+'m',bold:true,s:false},
+    {div:true},
+    {l:'Wages (post-cuts)',v:'−£'+y.wages+'m',s:true},
+    {l:'Operating costs',v:'−£'+y.opex+'m',s:true},
+    {l:'Player amortisation',v:'−£'+y.amor+'m',s:true,badge:'VARIABLE'},
+    {l:'Stadium debt service',v:'−£'+y.debt+'m',s:true,badge:'FIXED'},
+    {div:true},
+    {l:'Total costs',v:'−£'+y.totalCosts+'m',bold:true,s:true},
+    {div:true},
+    {l:'Net position',v:fmt(y.net,true),bold:true,net:true,danger:y.net<0},
+  ];
+  document.getElementById('plTable').innerHTML=rows.map(r=>{
+    if(r.div)return`<tr class="divr"><td colspan="2"><div class="divr-line"></div></td></tr>`;
+    const lc=r.net?(r.danger?'color:#E74C3C':'color:#27AE60'):r.s?'color:rgba(245,243,238,0.5)':'color:rgba(245,243,238,0.7)';
+    const vc=r.net?(r.danger?'color:#E74C3C':'color:#27AE60'):(r.bold?'color:var(--white)':'color:var(--white)');
+    const bold=r.bold?'font-weight:500;font-size:14px;':'';
+    const badge=r.badge?`<span class="${r.badge==='FIXED'?'fbadge':'vbadge'}">${r.badge}</span>`:'';
+    return`<tr><td style="${lc};${bold}">${r.l}${badge}</td><td style="${vc};${bold}">${r.v}</td></tr>`;
+  }).join('');
+}
+
+function updatePLChart(){
+  const ys=[1,2,3].map(calcYear);
+  if(charts.pl)charts.pl.destroy();
+  charts.pl=new Chart(document.getElementById('plChart'),{
+    type:'bar',
+    data:{
+      labels:['Year 1','Year 2','Year 3'],
+      datasets:[
+        {label:'Revenue',data:ys.map(y=>y.totalRev),backgroundColor:'#378ADD',borderWidth:0},
+        {label:'Total costs',data:ys.map(y=>y.totalCosts),backgroundColor:'#C0392B',borderWidth:0},
+        {label:'Net',data:ys.map(y=>y.net),backgroundColor:ys.map(y=>y.net>=0?'#27AE60':'#E74C3C'),borderWidth:0},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': £'+Math.abs(ctx.parsed.y)+'m'+(ctx.parsed.y<0?' (deficit)':'')}}},
+      scales:{
+        x:{ticks:{autoSkip:false,color:'rgba(245,243,238,0.5)',font:{family:'DM Mono',size:11}},grid:{display:false},border:{color:'rgba(245,243,238,0.1)'}},
+        y:{ticks:{callback:v=>'£'+v+'m',color:'rgba(245,243,238,0.5)',font:{family:'DM Mono',size:11}},grid:{color:'rgba(245,243,238,0.06)'},border:{display:false}}
+      }
+    }
+  });
+
+  const y1=calcYear(1);
+  if(charts.stack)charts.stack.destroy();
+  charts.stack=new Chart(document.getElementById('costStack'),{
+    type:'bar',
+    data:{
+      labels:['Year 1 cost breakdown'],
+      datasets:[
+        {label:'Wages',data:[y1.wages],backgroundColor:'#378ADD',borderWidth:0,stack:'s'},
+        {label:'Opex',data:[y1.opex],backgroundColor:'#185FA5',borderWidth:0,stack:'s'},
+        {label:'Amortisation',data:[y1.amor],backgroundColor:'#EF9F27',borderWidth:0,stack:'s'},
+        {label:'Debt service',data:[y1.debt],backgroundColor:'#C9A84C',borderWidth:0,stack:'s'},
+      ]
+    },
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': £'+ctx.parsed.x+'m'}}},
+      scales:{
+        x:{stacked:true,ticks:{callback:v=>'£'+v+'m',color:'rgba(245,243,238,0.5)',font:{family:'DM Mono',size:11}},grid:{color:'rgba(245,243,238,0.06)'},border:{display:false}},
+        y:{stacked:true,ticks:{color:'rgba(245,243,238,0.5)',font:{family:'DM Mono',size:11}},grid:{display:false},border:{display:false}}
+      }
+    }
+  });
+}
+
+function updateSliderLabels(){
+  document.getElementById('bcastv').textContent=gv('bcast')+'%';
+  document.getElementById('mdayv').textContent=gv('mday')+'%';
+  document.getElementById('parav').textContent='£'+gv('para')+'m';
+  document.getElementById('evtsv').textContent=gv('evts')+'%';
+  document.getElementById('aRv').textContent=gv('aR')+'%';
+  document.getElementById('slRv').textContent=gv('slR')+'%';
+  document.getElementById('stRv').textContent=gv('stR')+'%';
+  document.getElementById('oRv').textContent=gv('oR')+'%';
+  document.getElementById('discv').textContent=gv('disc')+'%';
+  document.getElementById('wcutv').textContent=gv('wcut')+'%';
+  document.getElementById('opexv').textContent=gv('opex')+'%';
+  document.getElementById('amorv').textContent=gv('amor')+'%';
+}
+
+function updateAll(){
+  updateSliderLabels();
+  updateMC();
+  updateRevSum();
+  updateSponsList();
+  updatePlayerGrid();
+  updatePlayerSumm();
+  updateCostChart();
+  updatePLTable();
+  updatePLChart();
+}
+
+function tog(i){sel.has(i)?sel.delete(i):sel.add(i);updateAll();}
+function selAll(){PLAYERS.forEach((_,i)=>sel.add(i));updateAll();}
+function selNone(){sel.clear();updateAll();}
+function selLikely(){sel.clear();PLAYERS.forEach((p,i)=>{if(p.likely)sel.add(i);});updateAll();}
+
+function sw(idx,btn){
+  document.querySelectorAll('.pane').forEach((p,i)=>p.classList.toggle('on',i===idx));
+  document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  updateAll();
+}
+
+function setYr(y,btn){
+  activeYr=y;
+  document.querySelectorAll('.ytab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  updatePLTable();
+}
+
+['bcast','mday','para','evts','aR','slR','stR','oR','disc','wcut','opex','amor'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',updateAll);
+});
+
+updateAll();
+</script>
+</body>
+</html>

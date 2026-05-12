@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JERAT — Mapping the Debt Trap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#fafaf8;--bg2:#f2f1ee;--bg3:#e8e7e2;
+  --text:#1a1a18;--text2:#5a5a56;--text3:#9a9a94;
+  --border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.18);
+  --red:#A32D2D;--red-bg:#FCEBEB;--red-bd:#F7C1C1;
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-bd:#FAC775;
+  --green:#27500A;--green-bg:#EAF3DE;--green-bd:#C0DD97;
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-bd:#B5D4F4;
+  --r:8px;--rl:14px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#181816;--bg2:#222220;--bg3:#2c2c2a;
+    --text:#f0efea;--text2:#a0a09a;--text3:#606058;
+    --border:rgba(255,255,255,.09);--border2:rgba(255,255,255,.16);
+    --red:#f09595;--red-bg:#2a1414;--red-bd:#5a2020;
+    --amber:#EF9F27;--amber-bg:#241800;--amber-bd:#5a3a00;
+    --green:#97C459;--green-bg:#0e1f04;--green-bd:#2a4a10;
+    --blue:#85B7EB;--blue-bg:#081828;--blue-bd:#1a3a5a;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.6;}
+
+.container{max-width:780px;margin:0 auto;padding:0 24px;}
+
+nav{border-bottom:0.5px solid var(--border);padding:14px 0;position:sticky;top:0;background:var(--bg);z-index:100;}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.nav-left{display:flex;align-items:baseline;gap:14px;}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:20px;color:var(--red);letter-spacing:-0.02em;}
+.nav-sub{font-size:12px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.nav-tag{font-size:11px;padding:3px 10px;border-radius:20px;border:0.5px solid var(--border2);color:var(--text2);}
+.lang-toggle{display:flex;background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;overflow:hidden;flex-shrink:0;}
+.lang-btn{background:none;border:none;padding:5px 13px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2);transition:background .15s,color .15s;}
+.lang-btn.active{background:var(--text);color:var(--bg);}
+
+.hero{padding:4rem 0 3rem;}
+.hero-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:1rem;}
+.hero-title{font-family:'DM Serif Display',serif;font-size:clamp(32px,6vw,52px);line-height:1.1;letter-spacing:-0.02em;margin-bottom:1.25rem;}
+.hero-title em{font-style:italic;color:var(--red);}
+.hero-body{font-size:15px;color:var(--text2);max-width:540px;line-height:1.75;margin-bottom:2rem;}
+.hero-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+.hs{background:var(--bg2);border-radius:var(--r);padding:1rem 1.1rem;border:0.5px solid var(--border);}
+.hs-n{font-size:20px;font-weight:500;}.hs-n.r{color:var(--red);}.hs-n.a{color:var(--amber);}
+.hs-l{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.4;}
+.hs-s{font-size:10px;color:var(--text3);margin-top:5px;}
+
+.section{padding:3rem 0;border-top:0.5px solid var(--border);}
+.section-kicker{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem;}
+.section-title{font-family:'DM Serif Display',serif;font-size:clamp(22px,4vw,30px);letter-spacing:-0.02em;margin-bottom:.75rem;line-height:1.2;}
+.section-body{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:1.5rem;max-width:560px;}
+
+.tool-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--rl);overflow:hidden;}
+.tool-header{padding:1.25rem 1.5rem;border-bottom:0.5px solid var(--border);}
+.tool-header h3{font-size:14px;font-weight:500;}
+.tool-header p{font-size:12px;color:var(--text2);margin-top:4px;line-height:1.5;}
+.tool-body{padding:1.25rem 1.5rem;}
+
+.fg{margin-bottom:1rem;}
+.fl{font-size:13px;color:var(--text2);margin-bottom:5px;display:block;}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+select,input[type=number]{width:100%;border:0.5px solid var(--border2);border-radius:var(--r);padding:8px 11px;font-size:13px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;appearance:none;-webkit-appearance:none;}
+select:focus,input:focus{outline:2px solid var(--blue);outline-offset:1px;}
+.inp-row{display:flex;gap:6px;align-items:center;}
+.inp-row select{width:75px;flex-shrink:0;}
+.inp-row input{flex:1;}
+.inp-row span{font-size:13px;color:var(--text2);flex-shrink:0;padding:8px 4px;}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.ci{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text2);line-height:1.45;cursor:pointer;}
+.ci input{margin-top:3px;flex-shrink:0;cursor:pointer;}
+.rr{display:flex;align-items:center;gap:10px;}
+.rr input[type=range]{flex:1;accent-color:var(--text);}
+.rl{font-size:12px;color:var(--text3);}
+
+.btn{background:var(--text);color:var(--bg);border:none;border-radius:var(--r);padding:10px 22px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s;}
+.btn:hover{opacity:.82;}
+
+.scheme-info{font-size:12px;color:var(--text2);background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:10px 13px;margin-top:8px;line-height:1.65;display:none;}
+.scheme-info.show{display:block;}
+.scheme-info strong{color:var(--text);font-weight:500;}
+
+.reveal{display:none;margin-top:1.25rem;}
+.reveal.show{display:block;}
+.rcard{border-radius:var(--rl);border:0.5px solid var(--border);padding:1.25rem 1.5rem;}
+.rcard.safe{border-color:var(--green-bd);background:var(--green-bg);}
+.rcard.warn{border-color:var(--amber-bd);background:var(--amber-bg);}
+.rcard.danger{border-color:var(--red-bd);background:var(--red-bg);}
+.score-row{display:flex;align-items:center;gap:14px;margin-bottom:1rem;}
+.score-big{font-size:44px;font-weight:300;line-height:1;}
+.score-big.safe{color:var(--green);}.score-big.warn{color:var(--amber);}.score-big.danger{color:var(--red);}
+.score-lbl{font-size:15px;font-weight:500;}
+.score-lbl.safe{color:var(--green);}.score-lbl.warn{color:var(--amber);}.score-lbl.danger{color:var(--red);}
+.score-sub{font-size:12px;color:var(--text2);margin-top:3px;line-height:1.5;}
+.prog-wrap{height:4px;background:var(--border);border-radius:2px;margin-bottom:1rem;}
+.prog{height:4px;border-radius:2px;transition:width .8s ease;}
+.prog.safe{background:var(--green);}.prog.warn{background:var(--amber);}.prog.danger{background:var(--red);}
+.ins-list{list-style:none;}
+.ins-list li{font-size:13px;padding:7px 0;border-bottom:0.5px solid var(--border);display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.ins-list li:last-child{border-bottom:none;}
+.ii{font-size:15px;flex-shrink:0;margin-top:1px;}
+
+.cost-table{border:0.5px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-top:1.25rem;}
+.ct-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;font-size:13px;border-bottom:0.5px solid var(--border);}
+.ct-row:last-child{border-bottom:none;}
+.ct-row.tot{background:var(--bg3);font-weight:500;}
+.ct-row.hid{background:var(--red-bg);}
+.cv{font-weight:500;}.cv.r{color:var(--red);}.cv.g{color:var(--green);}.cv.a{color:var(--amber);}
+.apr-pill{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;margin-left:8px;vertical-align:middle;}
+.apr-pill.bad{background:var(--red-bg);color:var(--red);}
+.apr-pill.warn{background:var(--amber-bg);color:var(--amber);}
+.apr-pill.ok{background:var(--green-bg);color:var(--green);}
+.verdict{margin-top:1rem;font-size:13px;line-height:1.65;color:var(--text2);padding:11px 14px;background:var(--bg2);border-radius:var(--r);border-left:3px solid var(--border2);}
+
+.tab-nav{display:flex;border-bottom:0.5px solid var(--border);margin-bottom:1.5rem;flex-wrap:wrap;}
+.tb{background:none;border:none;border-bottom:2px solid transparent;padding:.65rem 1.1rem .7rem;font-size:13px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:-1px;}
+.tb.active{color:var(--text);border-bottom-color:var(--text);font-weight:500;}
+.tb:hover:not(.active){color:var(--text);}
+.tp{display:none;}.tp.active{display:block;}
+
+.hook-banner{background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:var(--rl);padding:1.1rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:14px;}
+.hook-emoji{font-size:26px;flex-shrink:0;line-height:1.2;}
+.hook-text strong{font-size:14px;font-weight:500;color:var(--text);display:block;margin-bottom:3px;}
+.hook-text p{font-size:13px;color:var(--text2);line-height:1.55;}
+
+.mo-legend{display:flex;gap:16px;font-size:12px;color:var(--text2);margin-bottom:.5rem;}
+.mo-legend span{display:flex;align-items:center;gap:5px;}
+.ml-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.mo-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin:0 0 1rem;}
+.mc{height:52px;border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0.5px solid var(--border);}
+.mc.win{background:var(--green-bg);border-color:var(--green-bd);}
+.mc.loss{background:var(--red-bg);border-color:var(--red-bd);}
+.mc-icon{font-size:12px;}.mc-mo{font-size:8px;color:var(--text3);}.mc-val{font-size:8px;font-weight:500;color:var(--text2);}
+.trap-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:1rem;}
+.tcard{padding:.9rem 1rem;border-radius:var(--r);border:0.5px solid var(--border);text-align:center;}
+.tcard.win{background:var(--green-bg);border-color:var(--green-bd);}
+.tcard.loss{background:var(--red-bg);border-color:var(--red-bd);}
+.tcard.net{background:var(--bg2);}
+.tcard-num{font-size:18px;font-weight:500;}.tcard-num.g{color:var(--green);}.tcard-num.r{color:var(--red);}
+.tcard-lbl{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.4;}
+.callout{background:var(--amber-bg);border:0.5px solid var(--amber-bd);border-radius:var(--r);padding:12px 14px;margin-top:1rem;font-size:13px;color:var(--text2);line-height:1.65;display:none;}
+.callout.show{display:block;}
+.callout strong{color:var(--amber);font-weight:500;}
+
+.ctx p{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:.9rem;}
+.ctx strong{color:var(--text);font-weight:500;}
+.chart-wrap{position:relative;width:100%;height:240px;margin:1rem 0;}
+.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:1rem 0;}
+.src-note{font-size:11px;color:var(--text3);line-height:1.7;margin-top:1rem;}
+.sub-title{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:0.5px solid var(--border);}
+.divider{height:0.5px;background:var(--border);margin:2rem 0;}
+
+footer{border-top:0.5px solid var(--border);padding:2.5rem 0;margin-top:2rem;}
+.fi{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+.fl-left p{font-size:12px;color:var(--text3);line-height:1.7;}
+.fl-left strong{color:var(--text2);font-weight:500;display:block;margin-bottom:4px;}
+.fr-src{font-size:11px;color:var(--text3);line-height:1.8;}
+
+@media(max-width:600px){
+  .fr2,.cg,.hero-stats,.data-grid,.trap-cards{grid-template-columns:1fr;}
+  .mo-grid{grid-template-columns:repeat(6,1fr);}
+  .nav-tag,.nav-sub{display:none;}
+  .fi{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <div class="nav-logo">JERAT</div>
+        <div class="nav-sub" data-t="nav-sub">Mapping the debt trap</div>
+      </div>
+      <div class="nav-right">
+        <span class="nav-tag">OJK 2025</span>
+        <span class="nav-tag">FCA UK</span>
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <button class="lang-btn active" onclick="setLang('en')">EN</button>
+          <button class="lang-btn" onclick="setLang('id')">ID</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-kicker" data-t="hero-kicker">Digital Debt Awareness · Indonesia &amp; UK</div>
+    <h1 class="hero-title" data-t="hero-title">You signed up for<br>the <em>discount.</em><br>They got a customer.</h1>
+    <p class="hero-body" data-t="hero-body">An interactive look at how Buy Now Pay Later, predatory lending, and manipulative design are reshaping personal finance — using Indonesia as a case study with direct parallels to the UK market.</p>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-n r">IDR 79.97T</div><div class="hs-l" data-t="stat1">Active pinjol outstanding, Indonesia Mar 2025</div><div class="hs-s">OJK / Databoks 2025</div></div>
+      <div class="hs"><div class="hs-n a">+44% YoY</div><div class="hs-l" data-t="stat2">BNPL credit growth, Indonesia Jan 2025</div><div class="hs-s">OJK, Kompas.id 2025</div></div>
+      <div class="hs"><div class="hs-n r">11,166</div><div class="hs-l" data-t="stat3">Illegal lenders shut down in Indonesia since 2017</div><div class="hs-s">Satgas PASTI / OJK 2025</div></div>
+      <div class="hs"><div class="hs-n a">£10.5bn</div><div class="hs-l" data-t="stat4">UK BNPL market 2023, projected to triple by 2028</div><div class="hs-s">FCA / Statista 2024</div></div>
+    </div>
+  </div>
+
+  <!-- MODULE 1 -->
+  <div class="section">
+    <div class="section-kicker" data-t="m1-kicker">Module 01</div>
+    <h2 class="section-title" data-t="m1-title">The discount trap calculator</h2>
+    <p class="section-body" data-t="m1-body">SPayLater gives you Rp50,000 off your first order. Klarna offers 10% cashback. Month one, it genuinely feels like a win. This calculator shows what the platform earns from you over time — versus what you saved on day one.</p>
+    <div class="hook-banner">
+      <div class="hook-emoji">🎁</div>
+      <div class="hook-text">
+        <strong data-t="hook-title">The first deal is always the best deal.</strong>
+        <p data-t="hook-body">BNPL platforms spend heavily to acquire users. That discount is their customer acquisition cost — paid once. After that, you're the asset.</p>
+      </div>
+    </div>
+    <div class="tool-box">
+      <div class="tool-header">
+        <h3 data-t="dt-h3">Calculate your real first-year cost</h3>
+        <p data-t="dt-hp">Enter the offer that got you to sign up, then see how the numbers play out over time.</p>
+      </div>
+      <div class="tool-body">
+        <div class="fr2">
+          <div class="fg">
+            <label class="fl" data-t="dt-l-product">BNPL product</label>
+            <select id="dt-product">
+              <optgroup id="og-id" label="🇮🇩 Indonesia">
+                <option value="shopee">SPayLater (Shopee) — 2.95%/mo</option>
+                <option value="ovo">OVO PayLater — ~2.5%/mo</option>
+                <option value="traveloka">Traveloka PayLater — 2.14%/mo</option>
+                <option value="gopay">GoPay Pinjam — 0.3%/day</option>
+                <option value="kredivo">Kredivo — 2.6%/mo</option>
+                <option value="akulaku">Akulaku PayLater — ~2.5%/mo</option>
+              </optgroup>
+              <optgroup id="og-uk" label="🇬🇧 UK">
+                <option value="klarna">Klarna Pay in 3</option>
+                <option value="clearpay">Clearpay</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="fl" data-t="dt-l-discount">Sign-up discount / cashback</label>
+            <div class="inp-row">
+              <select id="dt-cur" onchange="updDtCur()"><option value="IDR" selected>IDR</option><option value="GBP">GBP</option></select>
+              <input type="number" id="dt-discount" value="50000" min="0" step="1000">
+            </div>
+          </div>
+        </div>
+        <div class="fr2">
+          <div class="fg">
+            <label class="fl" data-t="dt-l-spend">Typical monthly spend via this app</label>
+            <div class="inp-row">
+              <span id="dt-cur-lbl">IDR</span>
+              <input type="number" id="dt-spend" value="500000" min="0" step="50000">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl" data-t="dt-l-beh">How often do you pay on time?</label>
+            <select id="dt-beh">
+              <option value="always" data-t="beh0">Always — no late fees</option>
+              <option value="usually" selected data-t="beh1">Usually — miss 1–2 a year</option>
+              <option value="sometimes" data-t="beh2">Sometimes — miss one most quarters</option>
+              <option value="often" data-t="beh3">Often — frequently overdue</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl"><span data-t="dt-l-period">Projection period:</span> <span id="dt-mo-lbl" style="font-weight:500;color:var(--text);">12 months</span></label>
+          <div class="rr">
+            <span class="rl" data-t="range-lo">3 mo</span>
+            <input type="range" min="3" max="36" value="12" step="3" id="dt-months" oninput="updDtMo()">
+            <span class="rl" data-t="range-hi">36 mo</span>
+          </div>
+        </div>
+        <button class="btn" onclick="calcDiscount()" data-t="dt-btn">Show me the real picture →</button>
+        <div class="reveal" id="dt-res">
+          <div class="divider" style="margin:1.25rem 0 1rem;"></div>
+          <div class="sub-title" data-t="dt-breakdown">Month-by-month breakdown</div>
+          <div class="mo-legend">
+            <span><span class="ml-dot" style="background:var(--green-bg);border:1px solid var(--green-bd);"></span><span data-t="leg-ahead">You're ahead</span></span>
+            <span><span class="ml-dot" style="background:var(--red-bg);border:1px solid var(--red-bd);"></span><span data-t="leg-behind">Platform is ahead</span></span>
+          </div>
+          <div class="mo-grid" id="mo-grid"></div>
+          <div class="trap-cards" id="trap-cards"></div>
+          <div class="callout" id="dt-callout"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 2 -->
+  <div class="section">
+    <div class="section-kicker" data-t="m2-kicker">Modules 02 &amp; 03</div>
+    <h2 class="section-title" data-t="m2-title">Explore deeper</h2>
+    <p class="section-body" data-t="m2-body">Check your own debt risk profile, or calculate the true cost of any BNPL or lending product — with real rates from Indonesian and UK platforms.</p>
+
+    <div class="tab-nav">
+      <button class="tb active" onclick="sw('chk')" data-t="tab-chk">Debt health check</button>
+      <button class="tb" onclick="sw('calc')" data-t="tab-calc">True cost calculator</button>
+      <button class="tb" onclick="sw('data')" data-t="tab-data">Data &amp; context</button>
+    </div>
+
+    <div id="tp-chk" class="tp active">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.65;" data-t="chk-intro">Answer honestly — nothing is saved or tracked. Your score is based on risk patterns identified by Indonesia's OJK financial regulator and fintech researchers. The patterns are universal.</p>
+      <div class="fr2">
+        <div class="fg"><label class="fl" data-t="chk-l-bnpl">How many active BNPL / Pay Later accounts do you have?</label>
+          <select id="bnpl-c"><option value="0" data-t="opt-none">None</option><option value="1" data-t="opt-1acc">1 account</option><option value="2" data-t="opt-2acc">2 accounts</option><option value="3" data-t="opt-3acc">3 or more</option></select></div>
+        <div class="fg"><label class="fl" data-t="chk-l-loan">How many active personal or payday loans?</label>
+          <select id="pinj-c"><option value="0" data-t="opt-none2">None</option><option value="1" data-t="opt-1ln">1 loan</option><option value="2" data-t="opt-2ln">2 loans</option><option value="3" data-t="opt-3ln">3 or more</option></select></div>
+      </div>
+      <div class="fg"><label class="fl" data-t="chk-l-dti">What percentage of your monthly income goes to debt repayments?</label>
+        <select id="dti"><option value="0" data-t="dti0">Under 10%</option><option value="1" data-t="dti1">10–20%</option><option value="2" data-t="dti2">21–30%</option><option value="3" data-t="dti3">31–50%</option><option value="4" data-t="dti4">Over 50%</option></select></div>
+      <div class="fg"><label class="fl" data-t="chk-l-chk">Which of these apply to you? (tick all that apply)</label>
+        <div class="cg">
+          <label class="ci"><input type="checkbox" id="b1"><span data-t="b1">I've paid one debt by borrowing elsewhere</span></label>
+          <label class="ci"><input type="checkbox" id="b2"><span data-t="b2">I often use BNPL without checking the total repayment first</span></label>
+          <label class="ci"><input type="checkbox" id="b3"><span data-t="b3">I've used a loan or BNPL for everyday essentials (food, bills, rent)</span></label>
+          <label class="ci"><input type="checkbox" id="b4"><span data-t="b4">I'm not certain of my exact total debt right now</span></label>
+          <label class="ci"><input type="checkbox" id="b5"><span data-t="b5">I've missed a payment or been charged a late fee</span></label>
+          <label class="ci"><input type="checkbox" id="b6"><span data-t="b6">I've taken a new loan to repay an existing one</span></label>
+        </div>
+      </div>
+      <button class="btn" onclick="calcRisk()" data-t="chk-btn">Calculate my risk score →</button>
+      <div class="reveal" id="chk-res">
+        <div class="rcard" id="rcard">
+          <div class="score-row"><div class="score-big" id="sdsp">0</div>
+            <div><div class="score-lbl" id="stier">—</div><div class="score-sub" id="sdesc">—</div></div></div>
+          <div class="prog-wrap"><div class="prog" id="rbar" style="width:0%"></div></div>
+          <ul class="ins-list" id="ilist"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="tp-calc" class="tp">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.65;" data-t="calc-intro">Select a real product, enter the purchase price, and see what you actually pay — including costs that aren't advertised upfront.</p>
+      <div class="fr2">
+        <div class="fg"><label class="fl" data-t="calc-l-price">Item price</label>
+          <div class="inp-row">
+            <select id="calc-cur" onchange="updCalcCur()"><option value="GBP" selected>GBP</option><option value="IDR">IDR</option></select>
+            <input type="number" id="calc-price" value="300" min="1" step="10">
+          </div>
+        </div>
+        <div class="fg"><label class="fl" data-t="calc-l-scheme">Payment scheme</label>
+          <select id="calc-scheme" onchange="showMeta()">
+            <optgroup id="og-id2" label="🇮🇩 Indonesia — real products">
+              <option value="shopee">SPayLater (Shopee) — 2.95%/month</option>
+              <option value="ovo">OVO PayLater — ~2.5%/month</option>
+              <option value="traveloka">Traveloka PayLater — 2.14%/month</option>
+              <option value="gopay">GoPay Pinjam — up to 0.3%/day</option>
+              <option value="kredivo">Kredivo — 2.6%/month</option>
+              <option value="akulaku">Akulaku PayLater — ~2.5%/month</option>
+              <option value="pinjol_il">Illegal pinjol — up to 60%/week ⚠️</option>
+            </optgroup>
+            <optgroup id="og-uk2" label="🇬🇧 UK — real products">
+              <option value="klarna">Klarna Pay in 3 — 0% + late fees</option>
+              <option value="clearpay">Clearpay — 0% + £6/missed payment</option>
+              <option value="laybuy">Laybuy — 0% over 6 weeks</option>
+              <option value="payday_uk">UK payday loan — ~1,250% APR</option>
+            </optgroup>
+            <optgroup id="og-gen" label="Generic">
+              <option value="bnpl_gen">BNPL "0%" with hidden service fee</option>
+              <option value="pinjol_leg">Regulated online loan (0.3%/day max)</option>
+              <option value="cc_uk">Credit card — 22.8% APR (UK avg)</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+      <div class="scheme-info" id="si"></div>
+      <div class="fg" style="margin-top:1rem;">
+        <label class="fl"><span data-t="calc-l-tenor">Repayment period:</span> <span id="tenor-lbl" style="font-weight:500;color:var(--text);">3 months</span></label>
+        <div class="rr"><span class="rl">1</span><input type="range" min="1" max="24" value="3" step="1" id="tenor" oninput="updTenor()"><span class="rl">24</span></div>
+      </div>
+      <button class="btn" onclick="calcCost()" data-t="calc-btn">Show true cost →</button>
+      <div class="reveal" id="calc-res">
+        <div class="cost-table">
+          <div class="ct-row"><span data-t="cr-item">Item price</span><span class="cv g" id="cr-p">—</span></div>
+          <div class="ct-row"><span id="cr-fl">Interest / fees</span><span class="cv a" id="cr-f">—</span></div>
+          <div class="ct-row hid"><span id="cr-hl" style="color:var(--red);" data-t="cr-hidden">Hidden costs &amp; potential late fees</span><span class="cv r" id="cr-h">—</span></div>
+          <div class="ct-row tot"><span><span data-t="cr-total">Total you actually pay</span><span class="apr-pill" id="apr-pill"></span></span><span class="cv r" id="cr-t">—</span></div>
+          <div class="ct-row"><span style="font-size:12px;color:var(--text2);" data-t="cr-monthly">Monthly repayment</span><span class="cv" id="cr-m">—</span></div>
+        </div>
+        <div class="verdict" id="verdict"></div>
+      </div>
+    </div>
+
+    <div id="tp-data" class="tp">
+      <div class="ctx">
+        <p data-t="dp1">Indonesia has a financial inclusion rate of 75% — meaning most adults have access to financial products. But financial literacy sits at just <strong>65.4%</strong> (SNLIK 2024). That 9.6-point gap is exactly where BNPL and online lending thrives: products are used without being understood.</p>
+        <p data-t="dp2">The UK faces a structurally similar problem. BNPL is currently <strong>largely unregulated</strong> in the UK — Klarna, Clearpay, and Laybuy operate without the affordability checks that apply to credit cards or personal loans. FCA regulation has been proposed since 2021 but repeatedly delayed. The market is projected to triple by 2028.</p>
+        <p data-t="dp3">Both markets share a common mechanism: <strong>predatory design</strong>. False urgency timers, pre-selected credit defaults, and hidden fee structures bypass the deliberate decision-making that protects financial health. In both markets, younger users are most exposed.</p>
+      </div>
+      <div class="sub-title" style="margin-top:1.5rem;" data-t="chart-title">Indonesia — online lending outstanding (IDR trillion)</div>
+      <div class="chart-wrap"><canvas id="cgrowth" role="img" aria-label="Indonesian online lending growth 2022 to March 2025">2022: IDR46T, 2023: IDR51T, 2024: IDR62T, 2025: IDR80T.</canvas></div>
+      <div class="src-note" data-t="chart-src">Source: OJK Statistics LPBBTI 2022–2025</div>
+      <div class="divider"></div>
+      <div class="sub-title" data-t="aff-title">Who is most affected?</div>
+      <div class="data-grid">
+        <div class="hs"><div class="hs-n r">54%</div><div class="hs-l" data-t="dg1">Indonesian online loan users are Gen Z or Millennial (age 19–34)</div></div>
+        <div class="hs"><div class="hs-n r">20,400</div><div class="hs-l" data-t="dg2">Accounts under 19 already in default, Indonesia Mar 2025</div></div>
+        <div class="hs"><div class="hs-n a">27%</div><div class="hs-l" data-t="dg3">UK BNPL users who missed a payment cut back on essentials to repay (FCA 2023)</div></div>
+        <div class="hs"><div class="hs-n a">1 in 4</div><div class="hs-l" data-t="dg4">UK BNPL users did not realise they were taking on debt (Citizens Advice 2022)</div></div>
+      </div>
+      <div class="divider"></div>
+      <div class="src-note">
+        <strong style="color:var(--text2);font-weight:500;display:block;margin-bottom:4px;" data-t="src-title">Data sources</strong>
+        <span data-t="src-body">OJK Statistics LPBBTI March 2025 · Satgas PASTI OJK · SNLIK 2024 · Databoks/Katadata 2024–2025 · INDEF Policy Brief No. 1/2025 · FCA Consumer Research 2023 · Citizens Advice UK 2022 · Statista BNPL Report 2024</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="container">
+    <div class="fi">
+      <div class="fl-left">
+        <strong>JERAT — Mapping the debt trap</strong>
+        <p data-t="ft-desc">A portfolio project examining predatory lending, BNPL design, and financial literacy in Indonesia with global context. Built with real OJK and FCA data.</p>
+        <p style="margin-top:8px;">🇮🇩 OJK: <strong style="color:var(--text2);">157</strong> &nbsp;·&nbsp; 🇬🇧 StepChange: <strong style="color:var(--text2);">0800 138 1111</strong></p>
+      </div>
+      <div class="fr-src">
+        <strong style="display:block;margin-bottom:4px;color:var(--text2);" data-t="ft-ref">Key references</strong>
+        OJK / Satgas PASTI 2025<br>SNLIK 2024 · INDEF 2025<br>FCA UK 2023 · Citizens Advice 2022<br>Statista · Databoks · Kompas.id
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+var LANG='en';
+
+var T={
+en:{
+'nav-sub':'Mapping the debt trap',
+'hero-kicker':'Digital Debt Awareness · Indonesia & UK',
+'hero-title':'You signed up for<br>the <em>discount.</em><br>They got a customer.',
+'hero-body':'An interactive look at how Buy Now Pay Later, predatory lending, and manipulative design are reshaping personal finance — using Indonesia as a case study with direct parallels to the UK market.',
+'stat1':'Active pinjol outstanding, Indonesia Mar 2025','stat2':'BNPL credit growth, Indonesia Jan 2025',
+'stat3':'Illegal lenders shut down in Indonesia since 2017','stat4':'UK BNPL market 2023, projected to triple by 2028',
+'m1-kicker':'Module 01','m1-title':'The discount trap calculator',
+'m1-body':'SPayLater gives you Rp50,000 off your first order. Klarna offers 10% cashback. Month one, it genuinely feels like a win. This calculator shows what the platform earns from you over time — versus what you saved on day one.',
+'hook-title':'The first deal is always the best deal.',
+'hook-body':'BNPL platforms spend heavily to acquire users. That discount is their customer acquisition cost — paid once. After that, you\'re the asset.',
+'dt-h3':'Calculate your real first-year cost','dt-hp':'Enter the offer that got you to sign up, then see how the numbers play out over time.',
+'dt-l-product':'BNPL product','dt-l-discount':'Sign-up discount / cashback','dt-l-spend':'Typical monthly spend via this app',
+'dt-l-beh':'How often do you pay on time?',
+'beh0':'Always — no late fees','beh1':'Usually — miss 1–2 a year','beh2':'Sometimes — miss one most quarters','beh3':'Often — frequently overdue',
+'dt-l-period':'Projection period:','range-lo':'3 mo','range-hi':'36 mo',
+'dt-btn':'Show me the real picture →','dt-breakdown':'Month-by-month breakdown',
+'leg-ahead':'You\'re ahead','leg-behind':'Platform is ahead',
+'m2-kicker':'Modules 02 & 03','m2-title':'Explore deeper',
+'m2-body':'Check your own debt risk profile, or calculate the true cost of any BNPL or lending product — with real rates from Indonesian and UK platforms.',
+'tab-chk':'Debt health check','tab-calc':'True cost calculator','tab-data':'Data & context',
+'chk-intro':'Answer honestly — nothing is saved or tracked. Your score is based on risk patterns identified by Indonesia\'s OJK financial regulator and fintech researchers. The patterns are universal.',
+'chk-l-bnpl':'How many active BNPL / Pay Later accounts do you have?',
+'chk-l-loan':'How many active personal or payday loans?',
+'chk-l-dti':'What percentage of your monthly income goes to debt repayments?',
+'chk-l-chk':'Which of these apply to you? (tick all that apply)',
+'opt-none':'None','opt-none2':'None','opt-1acc':'1 account','opt-2acc':'2 accounts','opt-3acc':'3 or more',
+'opt-1ln':'1 loan','opt-2ln':'2 loans','opt-3ln':'3 or more',
+'dti0':'Under 10%','dti1':'10–20%','dti2':'21–30%','dti3':'31–50%','dti4':'Over 50%',
+'b1':'I\'ve paid one debt by borrowing elsewhere',
+'b2':'I often use BNPL without checking the total repayment first',
+'b3':'I\'ve used a loan or BNPL for everyday essentials (food, bills, rent)',
+'b4':'I\'m not certain of my exact total debt right now',
+'b5':'I\'ve missed a payment or been charged a late fee',
+'b6':'I\'ve taken a new loan to repay an existing one',
+'chk-btn':'Calculate my risk score →',
+'calc-intro':'Select a real product, enter the purchase price, and see what you actually pay — including costs that aren\'t advertised upfront.',
+'calc-l-price':'Item price','calc-l-scheme':'Payment scheme','calc-l-tenor':'Repayment period:',
+'calc-btn':'Show true cost →',
+'cr-item':'Item price','cr-hidden':'Hidden costs & potential late fees','cr-total':'Total you actually pay','cr-monthly':'Monthly repayment',
+'dp1':'Indonesia has a financial inclusion rate of 75% — meaning most adults have access to financial products. But financial literacy sits at just <strong>65.4%</strong> (SNLIK 2024). That 9.6-point gap is exactly where BNPL and online lending thrives: products are used without being understood.',
+'dp2':'The UK faces a structurally similar problem. BNPL is currently <strong>largely unregulated</strong> in the UK — Klarna, Clearpay, and Laybuy operate without the affordability checks that apply to credit cards or personal loans. FCA regulation has been proposed since 2021 but repeatedly delayed. The market is projected to triple by 2028.',
+'dp3':'Both markets share a common mechanism: <strong>predatory design</strong>. False urgency timers, pre-selected credit defaults, and hidden fee structures bypass the deliberate decision-making that protects financial health. In both markets, younger users are most exposed.',
+'chart-title':'Indonesia — online lending outstanding (IDR trillion)','chart-src':'Source: OJK Statistics LPBBTI 2022–2025',
+'aff-title':'Who is most affected?',
+'dg1':'Indonesian online loan users are Gen Z or Millennial (age 19–34)','dg2':'Accounts under 19 already in default, Indonesia Mar 2025',
+'dg3':'UK BNPL users who missed a payment cut back on essentials to repay (FCA 2023)','dg4':'UK BNPL users did not realise they were taking on debt (Citizens Advice 2022)',
+'src-title':'Data sources',
+'src-body':'OJK Statistics LPBBTI March 2025 · Satgas PASTI OJK · SNLIK 2024 · Databoks/Katadata 2024–2025 · INDEF Policy Brief No. 1/2025 · FCA Consumer Research 2023 · Citizens Advice UK 2022 · Statista BNPL Report 2024',
+'ft-desc':'A portfolio project examining predatory lending, BNPL design, and financial literacy in Indonesia with global context. Built with real OJK and FCA data.',
+'ft-ref':'Key references',
+'mo-suffix':' months','mo-suffix-1':' month',
+'tier-safe':'Low risk','tier-warn':'Moderate risk — attention needed','tier-danger':'High risk — act now',
+'desc-safe':'Your current borrowing habits appear relatively healthy.',
+'desc-warn':'Some patterns here warrant a closer look.',
+'desc-danger':'These patterns indicate a serious debt situation in progress.',
+'ins-safe':[{i:'ti-check',t:'Your debt-to-income ratio appears manageable at the moment.'},{i:'ti-alert-circle',t:'BNPL is engineered to gradually increase spending — what feels harmless can compound quickly.'},{i:'ti-piggy-bank',t:'Build an emergency fund before adding any new credit products.'}],
+'ins-warn':[{i:'ti-alert-triangle',t:'Multiple active credit products increase the risk of a cascade failure if your income drops.'},{i:'ti-arrows-right-left',t:'Paying one debt with another is an early sign of a debt trap — break this cycle if you can.'},{i:'ti-file-invoice',t:'Write out every repayment obligation you have — knowing the total is the first step.'},{i:'ti-phone',t:'UK: StepChange free on 0800 138 1111. Indonesia: OJK hotline 157. Both are confidential.'}],
+'ins-danger':[{i:'ti-circle-x',t:'Stop taking on any new debt immediately — each new product deepens your position.'},{i:'ti-building-bank',t:'UK: StepChange 0800 138 1111 or National Debtline. Indonesia: OJK hotline 157.'},{i:'ti-circle-x',t:'Never use a high-interest product to repay existing debt — the maths will not work.'},{i:'ti-users',t:'Problem debt is often an outcome of product design, not personal failure. Get help.'},{i:'ti-alert-triangle',t:'Prioritise debts with the highest rates and most aggressive penalties first.'}],
+'dt-mo':'Mo ','dt-saved':'You saved (month 1 discount)','dt-earned':'Platform earned in fees over ','dt-months-suf':' months',
+'dt-net-save':'Your net saving','dt-net-loss':'Your net loss',
+'dt-be-pre':'Break-even point: month ','dt-be-mid':'. That\'s when the platform started profiting from you — on a discount paid once. Over ',
+'dt-be-end':' months, they earned ','dt-be-end2':' in fees from a ','dt-be-end3':' acquisition cost. A return on investment most businesses would envy.',
+'dt-ahead':'You\'re still ahead over this period. Extend the timeline and the platform will eventually recoup far more than their acquisition cost. The model only works if users keep spending.'
+},
+id:{
+'nav-sub':'Memetakan jebakan utang',
+'hero-kicker':'Kesadaran Keuangan Digital · Indonesia & UK',
+'hero-title':'Kamu daftar karena<br><em>diskon-nya.</em><br>Mereka dapat pelanggan.',
+'hero-body':'Sebuah alat interaktif yang mengupas bagaimana Buy Now Pay Later, pinjaman predatoris, dan desain manipulatif mengubah cara kita mengelola keuangan — dengan Indonesia sebagai studi kasus, plus kaitannya dengan pasar UK.',
+'stat1':'Outstanding pinjol aktif, Indonesia Mar 2025','stat2':'Pertumbuhan kredit BNPL, Indonesia Jan 2025',
+'stat3':'Entitas pinjol ilegal yang ditutup sejak 2017','stat4':'Pasar BNPL UK 2023, diproyeksi tiga kali lipat pada 2028',
+'m1-kicker':'Modul 01','m1-title':'Kalkulator jebakan diskon',
+'m1-body':'SPayLater kasih kamu cashback Rp50.000 di transaksi pertama. Terasa menguntungkan — dan bulan pertama memang iya. Tapi kalkulator ini bakal ngitung berapa yang platform hasilkan dari kamu dari waktu ke waktu, dibandingkan yang kamu hemat di hari pertama.',
+'hook-title':'Deal pertama selalu yang paling bagus.',
+'hook-body':'Platform BNPL keluar banyak uang buat dapetin pengguna baru. Diskon itu adalah biaya akuisisi mereka — dibayar sekali. Setelah itu, kamu yang jadi aset mereka.',
+'dt-h3':'Hitung biaya nyata di tahun pertamamu','dt-hp':'Masukin penawaran yang bikin kamu daftar, lalu lihat angkanya berkembang dari waktu ke waktu.',
+'dt-l-product':'Produk BNPL','dt-l-discount':'Diskon / cashback yang kamu dapat saat daftar','dt-l-spend':'Pengeluaran bulanan kamu lewat aplikasi ini',
+'dt-l-beh':'Seberapa sering kamu bayar tepat waktu?',
+'beh0':'Selalu tepat waktu — tidak ada denda','beh1':'Biasanya — pernah telat 1–2 kali setahun','beh2':'Kadang — hampir setiap kuartal ada yang telat','beh3':'Sering — kerap melewati jatuh tempo',
+'dt-l-period':'Periode proyeksi:','range-lo':'3 bln','range-hi':'36 bln',
+'dt-btn':'Tunjukkan gambaran nyatanya →','dt-breakdown':'Rincian per bulan',
+'leg-ahead':'Kamu masih untung','leg-behind':'Platform sudah untung',
+'m2-kicker':'Modul 02 & 03','m2-title':'Gali lebih dalam',
+'m2-body':'Cek profil risiko utangmu sendiri, atau hitung biaya nyata dari produk BNPL atau pinjaman tertentu — dengan data bunga riil dari platform Indonesia dan UK.',
+'tab-chk':'Cek kesehatan utang','tab-calc':'Kalkulator biaya nyata','tab-data':'Data & konteks',
+'chk-intro':'Jawab jujur ya — tidak ada yang disimpan atau dilacak. Skormu dihitung berdasarkan pola risiko yang diidentifikasi OJK dan peneliti fintech. Polanya universal.',
+'chk-l-bnpl':'Berapa akun BNPL / PayLater aktif yang kamu punya?',
+'chk-l-loan':'Berapa pinjaman online / pinjol aktif yang kamu punya?',
+'chk-l-dti':'Berapa persen penghasilan bulananmu yang habis untuk cicilan?',
+'chk-l-chk':'Mana dari ini yang berlaku buat kamu? (centang semua yang sesuai)',
+'opt-none':'Tidak ada','opt-none2':'Tidak ada','opt-1acc':'1 akun','opt-2acc':'2 akun','opt-3acc':'3 atau lebih',
+'opt-1ln':'1 pinjaman','opt-2ln':'2 pinjaman','opt-3ln':'3 atau lebih',
+'dti0':'Kurang dari 10%','dti1':'10–20%','dti2':'21–30%','dti3':'31–50%','dti4':'Lebih dari 50%',
+'b1':'Aku pernah bayar satu utang dengan meminjam dari tempat lain',
+'b2':'Aku sering pakai BNPL saat checkout tanpa ngecek total cicilannya dulu',
+'b3':'Aku pernah pakai pinjaman atau BNPL untuk kebutuhan sehari-hari (makan, tagihan, sewa)',
+'b4':'Aku tidak yakin berapa total utangku sekarang',
+'b5':'Aku pernah telat bayar atau kena denda',
+'b6':'Aku pernah ambil pinjaman baru untuk bayar yang lama',
+'chk-btn':'Hitung skor risikonya →',
+'calc-intro':'Pilih produk nyata, masukkan harga barang, dan lihat berapa yang sebenarnya kamu bayar — termasuk biaya yang tidak ditampilkan di depan.',
+'calc-l-price':'Harga barang','calc-l-scheme':'Skema pembayaran','calc-l-tenor':'Jangka waktu:',
+'calc-btn':'Tunjukkan biaya nyatanya →',
+'cr-item':'Harga asli barang','cr-hidden':'Biaya tersembunyi & potensi denda','cr-total':'Total yang benar-benar kamu bayar','cr-monthly':'Cicilan per bulan',
+'dp1':'Indonesia punya tingkat inklusi keuangan 75% — artinya sebagian besar orang dewasa sudah bisa mengakses produk keuangan. Tapi literasi keuangan hanya <strong>65,4%</strong> (SNLIK 2024). Selisih 9,6 poin itulah celah yang dimanfaatkan industri BNPL dan pinjol: produknya dipakai, tapi risikonya tidak dipahami.',
+'dp2':'UK menghadapi masalah yang serupa secara struktural. BNPL di UK <strong>hampir tidak diatur</strong> — Klarna, Clearpay, dan Laybuy beroperasi tanpa cek kemampuan bayar seperti yang berlaku untuk kartu kredit atau pinjaman konvensional. Regulasi FCA sudah diusulkan sejak 2021 tapi terus ditunda. Pasarnya diproyeksi tumbuh tiga kali lipat pada 2028.',
+'dp3':'Kedua pasar punya satu kesamaan: <strong>desain predatoris</strong>. Timer hitung mundur palsu, opsi kredit yang diaktifkan secara default, dan struktur biaya tersembunyi — semuanya melewati proses pengambilan keputusan yang matang. Di kedua pasar, pengguna muda yang paling rentan.',
+'chart-title':'Indonesia — outstanding pinjol (IDR triliun)','chart-src':'Sumber: Statistik OJK LPBBTI 2022–2025',
+'aff-title':'Siapa yang paling terdampak?',
+'dg1':'Pengguna pinjol Indonesia adalah Gen Z atau Milenial (usia 19–34 tahun)','dg2':'Akun di bawah 19 tahun yang sudah default di Indonesia, Mar 2025',
+'dg3':'Pengguna BNPL UK yang melewatkan cicilan mengaku mengurangi kebutuhan pokok untuk bayar (FCA 2023)','dg4':'Pengguna BNPL UK tidak tahu kalau mereka sedang berutang (Citizens Advice 2022)',
+'src-title':'Sumber data',
+'src-body':'Statistik OJK LPBBTI Maret 2025 · Satgas PASTI OJK · SNLIK 2024 · Databoks/Katadata 2024–2025 · INDEF Policy Brief No. 1/2025 · FCA Consumer Research 2023 · Citizens Advice UK 2022 · Statista BNPL Report 2024',
+'ft-desc':'Proyek portofolio yang mengkaji pinjaman predatoris, desain BNPL, dan literasi keuangan di Indonesia dengan konteks global. Dibuat dengan data nyata dari OJK dan FCA.',
+'ft-ref':'Referensi utama',
+'mo-suffix':' bulan','mo-suffix-1':' bulan',
+'tier-safe':'Risiko rendah','tier-warn':'Risiko sedang — perlu perhatian','tier-danger':'Risiko tinggi — ambil tindakan sekarang',
+'desc-safe':'Kebiasaan pinjamanmu saat ini terlihat cukup sehat.',
+'desc-warn':'Ada beberapa pola di sini yang perlu kamu perhatikan.',
+'desc-danger':'Pola ini menunjukkan situasi utang yang serius dan sedang berjalan.',
+'ins-safe':[{i:'ti-check',t:'Rasio cicilan terhadap penghasilan kamu masih terlihat terkendali.'},{i:'ti-alert-circle',t:'BNPL dirancang untuk meningkatkan pengeluaran secara bertahap — yang terasa aman bisa menumpuk tanpa disadari.'},{i:'ti-piggy-bank',t:'Bangun dana darurat sebelum menambah produk kredit baru apa pun.'}],
+'ins-warn':[{i:'ti-alert-triangle',t:'Banyak produk kredit aktif sekaligus meningkatkan risiko gagal bayar berantai kalau penghasilan tiba-tiba turun.'},{i:'ti-arrows-right-left',t:'Bayar satu utang dengan utang lain adalah tanda awal debt trap — coba putus siklus ini kalau bisa.'},{i:'ti-file-invoice',t:'Tulis semua kewajiban cicilanmu — mengetahui totalnya adalah langkah pertama untuk mengatasinya.'},{i:'ti-phone',t:'Indonesia: hubungi OJK di 157. UK: StepChange gratis di 0800 138 1111. Keduanya rahasia.'}],
+'ins-danger':[{i:'ti-circle-x',t:'Hentikan pengambilan utang baru sekarang — setiap produk baru memperparah posisimu.'},{i:'ti-building-bank',t:'Indonesia: OJK 157. UK: StepChange 0800 138 1111 atau National Debtline.'},{i:'ti-circle-x',t:'Jangan pernah pakai produk berbunga tinggi untuk bayar utang yang ada — matematikanya tidak akan berhasil.'},{i:'ti-users',t:'Utang berlebih sering merupakan hasil dari desain produk, bukan kegagalan pribadi. Minta bantuan.'},{i:'ti-alert-triangle',t:'Prioritaskan dulu utang dengan bunga tertinggi dan denda paling besar.'}],
+'dt-mo':'Bln ','dt-saved':'Kamu hemat (diskon bulan 1)','dt-earned':'Platform hasilkan dari biaya selama ','dt-months-suf':' bulan',
+'dt-net-save':'Total keuntunganmu','dt-net-loss':'Total kerugianmu',
+'dt-be-pre':'Titik balik: bulan ke-','dt-be-mid':'. Di situlah platform mulai menghasilkan uang dari kamu — dari diskon yang mereka bayar sekali. Selama ',
+'dt-be-end':' bulan, mereka meraup ','dt-be-end2':' dari biaya dan bunga, dari modal akuisisi senilai ','dt-be-end3':'. Return on investment yang bikin iri pelaku bisnis mana pun.',
+'dt-ahead':'Kamu masih untung dalam periode ini. Tapi perpanjang waktunya dan platform akan akhirnya meraup jauh lebih banyak dari biaya akuisisi mereka. Model bisnis ini hanya berhasil kalau penggunanya terus bertransaksi.'
+}
+};
+
+function g(key){var v=T[LANG][key];return v!==undefined?v:(T.en[key]||key);}
+
+function setLang(lang){
+  LANG=lang;
+  document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.textContent===lang.toUpperCase());});
+  document.querySelectorAll('[data-t]').forEach(function(el){
+    var k=el.getAttribute('data-t'), v=g(k);
+    if(typeof v==='string'){
+      if(el.tagName==='OPTION'){el.textContent=v;}
+      else{el.innerHTML=v;}
+    }
+  });
+  // optgroup labels (not data-t because optgroup label attr)
+  document.getElementById('og-id').label=lang==='id'?'🇮🇩 Indonesia':'🇮🇩 Indonesia';
+  document.getElementById('og-uk').label='🇬🇧 UK';
+  document.getElementById('og-id2').label=lang==='id'?'🇮🇩 Indonesia — produk nyata':'🇮🇩 Indonesia — real products';
+  document.getElementById('og-uk2').label=lang==='id'?'🇬🇧 UK — produk nyata':'🇬🇧 UK — real products';
+  document.getElementById('og-gen').label=lang==='id'?'Umum':'Generic';
+  updDtMo(); updTenor();
+  if(document.getElementById('dt-res').classList.contains('show'))calcDiscount();
+  if(document.getElementById('chk-res').classList.contains('show'))calcRisk();
+  if(document.getElementById('calc-res').classList.contains('show'))calcCost();
+}
+
+var S={
+  shopee:{name:'SPayLater (Shopee)',rate:'2.95%/month',apr:'~42.8% APR',mRate:0.0295,hid:0.06,badge:'bad',
+    en:'One of Indonesia\'s most-used BNPL products, embedded in Shopee checkout — often pre-selected. The 2.95% monthly rate equals ~42.8% APR. Late fees of IDR 1,000–5,000/day apply on top.',
+    id:'Salah satu produk BNPL paling banyak dipakai di Indonesia, tertanam di checkout Shopee — sering diaktifkan secara default. Bunga 2,95%/bulan setara ~42,8% APR. Denda keterlambatan IDR 1.000–5.000/hari berlaku di luar bunga.'},
+  ovo:{name:'OVO PayLater',rate:'~2.5%/month',apr:'~34% APR',mRate:0.025,hid:0.05,badge:'bad',
+    en:'OVO PayLater is integrated with Grab and Tokopedia. Rates ~2.5%/month with admin fees. Positioned as a lifestyle convenience tool for transport and food delivery.',
+    id:'OVO PayLater terintegrasi dengan Grab dan Tokopedia. Bunga ~2,5%/bulan plus biaya admin. Diposisikan sebagai alat kemudahan untuk transportasi dan pesan makanan.'},
+  traveloka:{name:'Traveloka PayLater',rate:'2.14%/month',apr:'~29% APR',mRate:0.0214,hid:0.04,badge:'warn',
+    en:'A lower-rate Indonesian BNPL, designed for travel and hotel purchases. At 2.14%/month, the effective APR is still ~29%. Frequently bundled with time-limited "free instalment" promotions.',
+    id:'Produk BNPL Indonesia dengan bunga lebih rendah, untuk pembelian perjalanan dan hotel. Dengan 2,14%/bulan, APR efektifnya tetap ~29%. Sering ditawarkan dengan promo "cicilan gratis" berbatas waktu.'},
+  gopay:{name:'GoPay Pinjam',rate:'up to 0.3%/day',apr:'up to 109.5% APR',dRate:0.003,hid:0.07,badge:'bad',
+    en:'GoPay\'s lending arm charges up to OJK\'s regulatory maximum of 0.3%/day. Marketed as quick cash for Gojek users — the daily rate framing obscures a 100%+ annual cost.',
+    id:'Produk pinjaman GoPay mengenakan bunga hingga batas maksimal OJK, yaitu 0,3%/hari. Dipasarkan sebagai dana cepat untuk pengguna Gojek — framing harian menutupi biaya tahunan di atas 100%.'},
+  kredivo:{name:'Kredivo',rate:'2.6%/month',apr:'~37% APR',mRate:0.026,hid:0.05,badge:'bad',
+    en:'Offers a 30-day interest-free window, then charges 2.6%/month on instalment plans. Many users are unaware of the rate change when switching to paid plans.',
+    id:'Menawarkan jendela bebas bunga 30 hari, lalu mengenakan 2,6%/bulan pada paket cicilan berbayar. Banyak pengguna tidak sadar ada perubahan tarif saat beralih ke paket berbayar.'},
+  akulaku:{name:'Akulaku PayLater',rate:'~2.5%/month',apr:'~34% APR',mRate:0.025,hid:0.06,badge:'bad',
+    en:'Rates vary by credit profile — lower-income users typically get the higher end. Admin fees on top of interest. Embedded in Lazada and Tokopedia.',
+    id:'Bunga bervariasi sesuai profil kredit — pengguna berpenghasilan lebih rendah biasanya dapat tarif tertinggi. Biaya admin di luar bunga. Tertanam di Lazada dan Tokopedia.'},
+  pinjol_il:{name:'Illegal pinjol ⚠️',rate:'up to 60%/week',apr:'3,000%+ APR',wRate:0.6,hid:0.3,badge:'bad',
+    en:'Operate outside OJK regulation. If you default, they use your contact list to harass family and employers. Over 11,000 shut down since 2017 — new ones appear within days. Never use these.',
+    id:'Beroperasi di luar regulasi OJK. Jika gagal bayar, mereka menyalahgunakan kontak kamu untuk mengintimidasi keluarga dan rekan kerja. Lebih dari 11.000 ditutup sejak 2017 — yang baru muncul dalam hitungan hari. Jangan pernah gunakan ini.'},
+  klarna:{name:'Klarna Pay in 3',rate:'0% interest',apr:'0% APR — late fees',mRate:0,hid:0.04,flatFee:5,badge:'ok',
+    en:'Splits into 3 interest-free payments. No interest if paid on time, but a missed payment triggers a £5 fee and can affect your credit file. Currently unregulated in the UK — no mandatory affordability checks.',
+    id:'Memecah pembelian menjadi 3 cicilan bebas bunga. Tidak ada bunga kalau bayar tepat waktu, tapi cicilan yang terlewat memicu denda £5 dan bisa mempengaruhi credit file. Saat ini belum diatur di UK.'},
+  clearpay:{name:'Clearpay (Afterpay)',rate:'0% interest',apr:'0% — £6/missed payment',mRate:0,hid:0.05,flatFee:6,badge:'ok',
+    en:'£6 per missed instalment, capped at 25% of order value. A 2022 FCA review found 1 in 4 UK BNPL users did not know they were taking on debt.',
+    id:'Denda £6 per cicilan yang terlewat, maksimal 25% dari nilai pesanan. Tinjauan FCA 2022 menemukan 1 dari 4 pengguna BNPL UK tidak tahu kalau mereka sedang berutang.'},
+  laybuy:{name:'Laybuy',rate:'0% over 6 weeks',apr:'0% — late fees apply',mRate:0,hid:0.04,badge:'ok',
+    en:'Six weekly instalments at 0% interest. Late fees on missed payments. Laybuy entered administration in 2023 — a reminder that BNPL providers themselves carry risk.',
+    id:'Enam cicilan mingguan dengan bunga 0%. Denda berlaku untuk cicilan yang terlewat. Laybuy masuk proses kepailitan pada 2023.'},
+  payday_uk:{name:'UK payday loan',rate:'~1,250% APR',apr:'1,250% APR (FCA legal max)',dRate:0.008,hid:0.15,badge:'bad',
+    en:'FCA capped payday loans in 2015: max 0.8%/day, total cost no more than 100% of principal. Even at the cap, this is extremely expensive.',
+    id:'FCA membatasi pinjaman payday di 2015: maks 0,8%/hari, total biaya tidak boleh melebihi 100% dari pokok. Bahkan di batas legal, produk ini sangat mahal.'},
+  bnpl_gen:{name:'Generic BNPL (hidden fee)',rate:'~1.5–2%/month',apr:'~22–28% APR effective',mRate:0.018,hid:0.05,badge:'warn',
+    en:'Many "0% interest" BNPL products embed a 1.5–2%/month service fee into the instalment structure. The total cost is identical to interest — just not labelled that way.',
+    id:'Banyak produk BNPL "0% bunga" menyisipkan biaya layanan 1,5–2%/bulan ke dalam struktur cicilan. Total biayanya sama dengan bunga — hanya tidak diberi label seperti itu.'},
+  pinjol_leg:{name:'Regulated online loan (Indonesia)',rate:'0.3%/day max',apr:'~109.5% APR',dRate:0.003,hid:0.07,badge:'bad',
+    en:'Even Indonesia\'s legally regulated maximum (0.3%/day by OJK) equates to over 100% APR annually. Legal, but extremely expensive versus bank lending.',
+    id:'Bahkan batas maksimal yang diatur OJK (0,3%/hari) setara dengan lebih dari 100% APR per tahun. Legal, tapi tetap sangat mahal dibandingkan pinjaman bank.'},
+  cc_uk:{name:'UK credit card (average)',rate:'22.8% APR',apr:'22.8% APR',mRate:0.019,hid:0.02,badge:'warn',
+    en:'UK average credit card rate. Cheaper than most BNPL paid plans and all payday products — provided you pay in full each month.',
+    id:'Rata-rata bunga kartu kredit UK. Lebih murah dari kebanyakan BNPL berbayar dan semua produk payday — asalkan kamu bayar penuh setiap bulan.'}
+};
+
+var dtR={shopee:0.0295,ovo:0.025,traveloka:0.0214,gopay:0.09,kredivo:0.026,akulaku:0.025,klarna:0,clearpay:0};
+var dtL={shopee:35000,ovo:25000,traveloka:20000,gopay:50000,kredivo:30000,akulaku:25000,klarna:5,clearpay:6};
+var missM={always:0,usually:1.5,sometimes:3,often:6};
+
+var dtCur='IDR',calcCur='GBP';
+function updDtCur(){dtCur=document.getElementById('dt-cur').value;document.getElementById('dt-cur-lbl').textContent=dtCur;}
+function updCalcCur(){calcCur=document.getElementById('calc-cur').value;}
+function fmtI(n){return 'Rp'+Math.round(n).toLocaleString('id-ID');}
+function fmtG(n){return '£'+parseFloat(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtD(n){return dtCur==='IDR'?fmtI(n):fmtG(n);}
+function fmtC(n){return calcCur==='IDR'?fmtI(n):fmtG(n);}
+
+function updDtMo(){var v=document.getElementById('dt-months').value;document.getElementById('dt-mo-lbl').textContent=v+g('mo-suffix');}
+function updTenor(){var v=document.getElementById('tenor').value;document.getElementById('tenor-lbl').textContent=v+(LANG==='id'?' bulan':(v>1?' months':' month'));}
+
+function calcDiscount(){
+  var prod=document.getElementById('dt-product').value;
+  var disc=parseFloat(document.getElementById('dt-discount').value)||0;
+  var spend=parseFloat(document.getElementById('dt-spend').value)||0;
+  var beh=document.getElementById('dt-beh').value;
+  var mos=parseInt(document.getElementById('dt-months').value)||12;
+  var mRate=dtR[prod]||0.025;
+  var lFee=dtL[prod]||(dtCur==='GBP'?5:25000);
+  var missPerMo=(missM[beh]||0)/12;
+  var moCost=(spend*mRate)+(lFee*missPerMo);
+  var cells='',cumNet=disc,beM=-1;
+  for(var i=1;i<=mos;i++){
+    cumNet-=moCost;
+    if(cumNet<0&&beM===-1)beM=i;
+    var ahead=cumNet>=0;
+    cells+='<div class="mc '+(ahead?'win':'loss')+'"><span class="mc-icon">'+(ahead?'😊':'💸')+'</span><span class="mc-mo">'+g('dt-mo')+i+'</span><span class="mc-val">'+fmtD(Math.abs(cumNet))+'</span></div>';
+  }
+  var totalF=moCost*mos,netR=disc-totalF;
+  document.getElementById('mo-grid').innerHTML=cells;
+  document.getElementById('trap-cards').innerHTML=
+    '<div class="tcard win"><div class="tcard-num g">'+fmtD(disc)+'</div><div class="tcard-lbl">'+g('dt-saved')+'</div></div>'+
+    '<div class="tcard loss"><div class="tcard-num r">'+fmtD(totalF)+'</div><div class="tcard-lbl">'+g('dt-earned')+mos+g('dt-months-suf')+'</div></div>'+
+    '<div class="tcard '+(netR>=0?'win':'loss')+'"><div class="tcard-num '+(netR>=0?'g':'r')+'">'+fmtD(Math.abs(netR))+'</div><div class="tcard-lbl">'+(netR>=0?g('dt-net-save'):g('dt-net-loss'))+'</div></div>';
+  var co=document.getElementById('dt-callout');
+  if(beM>0&&beM<=mos)
+    co.innerHTML='<strong>'+g('dt-be-pre')+beM+'</strong>'+g('dt-be-mid')+mos+g('dt-be-end')+'<strong>'+fmtD(totalF)+'</strong>'+g('dt-be-end2')+'<strong>'+fmtD(disc)+'</strong>'+g('dt-be-end3');
+  else
+    co.innerHTML=g('dt-ahead');
+  co.classList.add('show');
+  document.getElementById('dt-res').classList.add('show');
+}
+
+function calcRisk(){
+  var score=0;
+  score+=parseInt(document.getElementById('bnpl-c').value)*8;
+  score+=parseInt(document.getElementById('pinj-c').value)*14;
+  score+=parseInt(document.getElementById('dti').value)*12;
+  score+=['b1','b2','b3','b4','b5','b6'].filter(function(id){return document.getElementById(id).checked;}).length*9;
+  score=Math.min(score,100);
+  var lvl=score<30?'safe':score<65?'warn':'danger';
+  document.getElementById('sdsp').textContent=score;
+  document.getElementById('sdsp').className='score-big '+lvl;
+  document.getElementById('rbar').style.width=score+'%';
+  document.getElementById('rbar').className='prog '+lvl;
+  document.getElementById('rcard').className='rcard '+lvl;
+  document.getElementById('stier').textContent=g('tier-'+lvl);
+  document.getElementById('stier').className='score-lbl '+lvl;
+  document.getElementById('sdesc').textContent=g('desc-'+lvl);
+  document.getElementById('ilist').innerHTML=g('ins-'+lvl).map(function(x){return '<li><i class="ti '+x.i+' ii" aria-hidden="true"></i><span>'+x.t+'</span></li>';}).join('');
+  document.getElementById('chk-res').classList.add('show');
+}
+
+function showMeta(){
+  var s=document.getElementById('calc-scheme').value,m=S[s],el=document.getElementById('si');
+  if(!m)return;
+  el.innerHTML='<strong>'+m.name+'</strong> &nbsp;·&nbsp; '+m.rate+' &nbsp;·&nbsp; '+m.apr+'<br><span style="margin-top:4px;display:block;">'+(LANG==='id'&&m.id?m.id:m.en)+'</span>';
+  el.classList.add('show');
+}
+
+function calcCost(){
+  var price=parseFloat(document.getElementById('calc-price').value)||300;
+  var s=document.getElementById('calc-scheme').value,m=S[s];
+  var tenor=parseInt(document.getElementById('tenor').value);
+  if(!m)return;
+  var fee=0,hid=price*m.hid,lbl=LANG==='id'?'Total bunga / biaya':'Interest / fees';
+  if(m.wRate){var wks=Math.ceil(tenor*4.33);fee=price*m.wRate*wks;lbl=m.rate+' × '+wks+(LANG==='id'?' minggu':' weeks');}
+  else if(m.dRate){var days=tenor*30;fee=price*m.dRate*days;lbl=m.rate+' × '+days+(LANG==='id'?' hari':' days');}
+  else if(m.mRate){fee=price*m.mRate*tenor;lbl=m.rate+' × '+tenor+(LANG==='id'?' bulan':' months');}
+  if(m.flatFee)hid=Math.max(hid,m.flatFee*2);
+  var total=price+fee+hid,mo=total/tenor,over=((total-price)/price*100).toFixed(1);
+  document.getElementById('cr-p').textContent=fmtC(price);
+  document.getElementById('cr-fl').textContent=lbl;
+  document.getElementById('cr-f').textContent=fmtC(fee);
+  document.getElementById('cr-h').textContent=fmtC(hid);
+  document.getElementById('cr-t').textContent=fmtC(total);
+  document.getElementById('cr-m').textContent=fmtC(mo)+(LANG==='id'?'/bulan':'/month');
+  var pill=document.getElementById('apr-pill');pill.textContent=m.apr;pill.className='apr-pill '+(m.badge||'warn');
+  var info=LANG==='id'&&m.id?m.id:m.en;
+  var overTxt=fee>0?(LANG==='id'?' Dalam '+tenor+' bulan, kamu membayar '+over+'% lebih mahal dari harga aslinya.':' Over '+tenor+(tenor>1?' months':' month')+', you pay '+over+'% more than the sticker price.'):'';
+  document.getElementById('verdict').textContent=info+overTxt;
+  document.getElementById('calc-res').classList.add('show');
+}
+
+function sw(id){
+  ['chk','calc','data'].forEach(function(t,i){
+    document.querySelectorAll('.tb')[i].classList.toggle('active',t===id);
+    document.getElementById('tp-'+t).classList.toggle('active',t===id);
+  });
+  if(id==='data'&&!window.cDone)drawChart();
+}
+
+function drawChart(){
+  window.cDone=true;
+  var dk=matchMedia('(prefers-color-scheme:dark)').matches;
+  var tc=dk?'#a0a09a':'#5a5a56';
+  new Chart(document.getElementById('cgrowth'),{
+    type:'bar',
+    data:{labels:['2022','2023','2024 (Mar)','2025 (Mar)'],
+      datasets:[{data:[46,51,62.17,79.97],backgroundColor:['#B5D4F4','#85B7EB','#378ADD','#A32D2D'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return 'IDR '+c.parsed.y+'T';}}}},
+      scales:{x:{ticks:{color:tc,font:{size:12,family:'DM Sans'}},grid:{display:false}},
+        y:{ticks:{color:tc,font:{size:12,family:'DM Sans'},callback:function(v){return v+'T';}},
+          grid:{color:dk?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)'}}}}
+  });
+}
+
+showMeta();
+</script>
+</body>
+</html>
