@@ -505,6 +505,291 @@
     color: rgba(0,0,0,0.5);
   }
 
+  /* ============================================
+     WORKFLOW SECTION — NEW
+     ============================================ */
+  .section-workflow {
+    padding: 120px 60px;
+    background: var(--black);
+    color: var(--cream);
+    position: relative;
+    overflow: hidden;
+  }
+  .section-workflow::before {
+    content: 'PROCESS';
+    position: absolute;
+    top: 40px;
+    right: -20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 180px;
+    color: rgba(255,255,255,0.025);
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -0.02em;
+  }
+
+  .workflow-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: end;
+    margin-bottom: 80px;
+  }
+  .workflow-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 6vw, 88px);
+    line-height: 0.9;
+    letter-spacing: 0.01em;
+  }
+  .workflow-title span { color: var(--hot); }
+  .workflow-intro {
+    font-size: 0.9rem;
+    line-height: 1.8;
+    font-weight: 300;
+    color: rgba(255,255,255,0.6);
+    padding-bottom: 8px;
+  }
+
+  /* TIMELINE STEPS */
+  .workflow-steps {
+    position: relative;
+  }
+  .workflow-steps::before {
+    content: '';
+    position: absolute;
+    left: 28px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--hot), rgba(255,51,102,0.1));
+  }
+
+  .wf-step {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 40px;
+    margin-bottom: 2px;
+    position: relative;
+  }
+
+  .wf-step-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+    position: relative;
+    z-index: 2;
+  }
+  .wf-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--hot);
+    border: 3px solid var(--black);
+    box-shadow: 0 0 0 1px var(--hot);
+    flex-shrink: 0;
+  }
+  .wf-step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.2);
+    margin-top: 8px;
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+  }
+
+  .wf-step-body {
+    background: #111;
+    padding: 40px;
+    margin-bottom: 2px;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .wf-step-body:hover { background: #161616; }
+  .wf-step-body::after {
+    content: attr(data-stage);
+    position: absolute;
+    bottom: -30px;
+    right: -10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 110px;
+    color: rgba(255,255,255,0.02);
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  .wf-stage-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--hot);
+    margin-bottom: 12px;
+  }
+  .wf-stage-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    font-style: italic;
+    margin-bottom: 16px;
+    line-height: 1.1;
+  }
+  .wf-stage-desc {
+    font-size: 0.85rem;
+    line-height: 1.75;
+    font-weight: 300;
+    color: rgba(255,255,255,0.65);
+    max-width: 640px;
+    margin-bottom: 28px;
+  }
+
+  .wf-bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  /* Tool pills */
+  .wf-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .wf-tool-pill {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 6px 14px;
+    border: 1px solid rgba(255,51,102,0.4);
+    color: var(--hot);
+    background: rgba(255,51,102,0.08);
+  }
+
+  /* Prompt box */
+  .wf-prompt {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-left: 3px solid rgba(255,255,255,0.15);
+    padding: 16px 20px;
+  }
+  .wf-prompt-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 8px;
+  }
+  .wf-prompt-text {
+    font-size: 0.78rem;
+    font-style: italic;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+  }
+  .wf-prompt-text em {
+    font-style: normal;
+    color: rgba(255,255,255,0.75);
+    font-weight: 400;
+  }
+
+  /* Decision note */
+  .wf-decision {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.35);
+  }
+  .wf-decision strong {
+    color: rgba(255,255,255,0.55);
+    font-weight: 500;
+  }
+
+  /* REFLECTIONS */
+  .wf-reflections {
+    margin-top: 80px;
+    padding-top: 64px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .wf-ref-heading {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 3vw, 44px);
+    line-height: 1.1;
+    font-style: italic;
+  }
+  .wf-ref-heading em { color: var(--hot); font-style: italic; }
+  .wf-ref-list {
+    list-style: none;
+  }
+  .wf-ref-item {
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .wf-ref-item:first-child { padding-top: 0; }
+  .wf-ref-item:last-child { border-bottom: none; }
+  .wf-ref-arrow {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    color: var(--hot);
+    margin-top: 2px;
+  }
+  .wf-ref-text {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    font-weight: 300;
+    color: rgba(255,255,255,0.65);
+  }
+  .wf-ref-text strong {
+    color: rgba(255,255,255,0.9);
+    font-weight: 500;
+  }
+
+  /* SCALABILITY CALLOUT */
+  .wf-scale-box {
+    margin-top: 64px;
+    background: rgba(255,51,102,0.08);
+    border: 1px solid rgba(255,51,102,0.2);
+    padding: 40px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+  .wf-scale-icon {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--hot);
+    line-height: 1;
+  }
+  .wf-scale-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--hot);
+    margin-bottom: 8px;
+  }
+  .wf-scale-text {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    font-weight: 300;
+    color: rgba(255,255,255,0.65);
+  }
+  .wf-scale-text strong {
+    color: rgba(255,255,255,0.9);
+    font-weight: 500;
+  }
+
   /* COPY SAMPLES */
   .section-copy {
     background: var(--accent);
@@ -653,6 +938,14 @@
     .section-tiktok, .section-ai, .section-copy, .section-kpi { padding: 80px 24px; }
     footer { flex-direction: column; gap: 24px; text-align: center; padding: 40px 24px; }
     .footer-note { text-align: center; }
+    .section-workflow { padding: 80px 24px; }
+    .workflow-header { grid-template-columns: 1fr; gap: 32px; margin-bottom: 48px; }
+    .wf-step { grid-template-columns: 40px 1fr; gap: 20px; }
+    .wf-step-body { padding: 28px 24px; }
+    .wf-bottom-row { grid-template-columns: 1fr; }
+    .wf-reflections { grid-template-columns: 1fr; gap: 40px; }
+    .wf-scale-box { grid-template-columns: 1fr; gap: 16px; }
+    .workflow-steps::before { left: 19px; }
   }
 </style>
 </head>
@@ -667,6 +960,7 @@
     <li><a href="#concept">Concept</a></li>
     <li><a href="#tiktok">TikTok Plan</a></li>
     <li><a href="#ai">AI Tools</a></li>
+    <li><a href="#workflow">How It Was Built</a></li>
     <li><a href="#copy">Copy</a></li>
   </ul>
 </nav>
@@ -682,10 +976,11 @@
     <p class="hero-sub">A TikTok-first pop campaign built to turn an unknown into everyone's favorite obsession — in 30 days.</p>
     <div class="hero-cta-row">
       <a href="#concept" class="btn-primary">See the campaign</a>
-      <a href="#ai" class="btn-ghost">AI breakdown →</a>
+      <a href="#workflow" class="btn-ghost">How it was built →</a>
+      <a href="zara-vale-case-study.html" class="btn-ghost" style="color: var(--hot);">AI case study →</a>
     </div>
 
-    <!-- AUDIO PLAYER — sits right below the buttons in the hero -->
+    <!-- AUDIO PLAYER -->
     <div class="hero-player">
       <button class="hp-btn" id="playBtn" onclick="togglePlay()" aria-label="Play">
         <svg id="iconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -783,7 +1078,7 @@
     <div class="tiktok-card reveal" data-week="1">
       <p class="card-week">Week 01 — Teaser Phase</p>
       <h3 class="card-title">Mystery Drop</h3>
-      <p class="card-body"> Zara uploads on her social media channels. Just 3-second clips of Zara dancing in a strobe-lit room to a distorted snippet of "STATIC." Caption is a single word: <em>soon.</em> Comment section becomes a guessing game. Algorithm reward: saves and shares spike.</p>
+      <p class="card-body">Zara uploads on her social media channels. Just 3-second clips of Zara dancing in a strobe-lit room to a distorted snippet of "STATIC." Caption is a single word: <em>soon.</em> Comment section becomes a guessing game. Algorithm reward: saves and shares spike.</p>
       <div class="card-hook">
         <span class="card-hook-label">Hook Script</span>
         POV: you hear a song and you can't stop moving even though you don't know the words yet
@@ -819,7 +1114,7 @@
     <div class="tiktok-card reveal reveal-delay-1" data-week="5">
       <p class="card-week">Week 05 — Press + Playlist Push</p>
       <h3 class="card-title">Crossing Over</h3>
-      <p class="card-body">Editorial pitch: target rising pop and new pop music playlists targeting the UK market on Spotify, Apple Music and YouTube Music. PR push to online music blogs. TikTok live performance of STATIC. Collaborations with other artists with STATIC as the background music</p>
+      <p class="card-body">Editorial pitch: target rising pop and new pop music playlists on Spotify, Apple Music and YouTube Music. PR push to online music blogs. TikTok live performance of STATIC. Collaborations with other artists with STATIC as the background music.</p>
       <div class="card-hook">
         <span class="card-hook-label">Hook Script</span>
         I watched every single one of your #staticchallenge videos 💗
@@ -875,10 +1170,210 @@
 
 <div class="divider"></div>
 
+<!-- ============================================
+     WORKFLOW SECTION — NEW
+     ============================================ -->
+<section class="section-workflow" id="workflow">
+
+  <div class="workflow-header reveal">
+    <div>
+      <p class="section-label" style="color: var(--hot);">04 / How It Was Built</p>
+      <h2 class="workflow-title">THE<br><span>MAKING</span><br>OF STATIC</h2>
+    </div>
+    <p class="workflow-intro">
+      This campaign was built solo, from zero — no agency, no budget, no team. Every asset you've seen above was produced using a deliberate AI workflow: strategy first, tools second, human judgment throughout. Here's exactly how it came together, stage by stage.
+    </p>
+  </div>
+
+  <div class="workflow-steps">
+
+    <!-- STEP 1 -->
+    <div class="wf-step reveal">
+      <div class="wf-step-marker">
+        <div class="wf-dot"></div>
+        <div class="wf-step-num">01</div>
+      </div>
+      <div class="wf-step-body" data-stage="01">
+        <p class="wf-stage-label">Stage 01 — Foundation</p>
+        <h3 class="wf-stage-title">Define the artist. Write the brief.</h3>
+        <p class="wf-stage-desc">Before touching any creative tool, the work started with a brief. Who is Zara Vale? What does she sound like, look like, stand for? I used Claude to stress-test the character — asking for audience personas, cultural references, and platform behaviors — iterating until the brief felt genuinely specific rather than generic. A vague brief produces vague campaigns. Getting this stage right made everything downstream faster and more consistent.</p>
+        <div class="wf-bottom-row">
+          <div class="wf-tools">
+            <span class="wf-tool-pill">Claude</span>
+          </div>
+          <div class="wf-prompt">
+            <div class="wf-prompt-label">Prompt used</div>
+            <div class="wf-prompt-text">"I'm building a campaign for a fictional emerging pop artist. She's 22, from Manchester, genre-blending — think Charli XCX charisma meets Dua Lipa production. Give me <em>three audience personas</em> with platform habits, listening behaviors, and content triggers for TikTok."</div>
+          </div>
+        </div>
+        <div class="wf-decision"><strong>Key decision:</strong> Ran 3 rounds of persona refinement before locking in. The first outputs were too generic ("Gen Z music fan"). Pushed for specificity — the "chronically online maximalist" persona that came out of round 3 shaped the entire visual direction.</div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="wf-step reveal">
+      <div class="wf-step-marker">
+        <div class="wf-dot"></div>
+        <div class="wf-step-num">02</div>
+      </div>
+      <div class="wf-step-body" data-stage="02">
+        <p class="wf-stage-label">Stage 02 — Concept</p>
+        <h3 class="wf-stage-title">Generate directions. Kill most of them.</h3>
+        <p class="wf-stage-desc">With the brief locked, I used Claude to generate five distinct campaign concept directions — each with a name, a one-line idea, and a TikTok content hook. The goal wasn't to take the first good answer. It was to have enough options to make a real creative choice. "The Anti-Wallflower" was direction #3. I rejected two stronger-sounding concepts because they were harder to execute in short-form video. Practicality is a creative decision.</p>
+        <div class="wf-bottom-row">
+          <div class="wf-tools">
+            <span class="wf-tool-pill">Claude</span>
+          </div>
+          <div class="wf-prompt">
+            <div class="wf-prompt-label">Prompt used</div>
+            <div class="wf-prompt-text">"Give me <em>5 campaign concept directions</em> for this brief. For each: a name, a one-line idea, and a TikTok content hook. Tone: bold, slightly chaotic, unapologetic. Avoid anything that's been done before for a pop launch."</div>
+          </div>
+        </div>
+        <div class="wf-decision"><strong>Key decision:</strong> ~40 concept variants were generated across multiple sessions before landing on the final direction. The volume is the point — AI is fast at generating options, but only a human knows which one is worth building.</div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="wf-step reveal">
+      <div class="wf-step-marker">
+        <div class="wf-dot"></div>
+        <div class="wf-step-num">03</div>
+      </div>
+      <div class="wf-step-body" data-stage="03">
+        <p class="wf-stage-label">Stage 03 — Sound</p>
+        <h3 class="wf-stage-title">Prototype the sonic identity.</h3>
+        <p class="wf-stage-desc">A music campaign needs a sound. Before writing a single caption, I prototyped "STATIC" using Suno AI — iterating on the instrumental hook until it matched the campaign's energy: high-tempo, distorted synth, built for a 15-second TikTok loop. The chorus preview you heard at the top of this page was generated from a single prompt, then selected from 6 variations. It serves as a sonic reference point for everything else — the visual palette, the copy tone, the campaign pacing.</p>
+        <div class="wf-bottom-row">
+          <div class="wf-tools">
+            <span class="wf-tool-pill">Suno AI</span>
+          </div>
+          <div class="wf-prompt">
+            <div class="wf-prompt-label">Prompt used</div>
+            <div class="wf-prompt-text">"High-energy disco pop beats, <em>distorted synth hook</em>, female vocal lead, funky modern house beats with a whimsical flair. Hook should feel like it belongs on a TikTok sound that people loop 40 times."</div>
+          </div>
+        </div>
+        <div class="wf-decision"><strong>Key decision:</strong> Generated 6 variations, selected variation 4. Rejected the others for being too polished — the slight rawness of #4 felt more authentic to the "Anti-Wallflower" character and more native to TikTok's sonic language.</div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="wf-step reveal">
+      <div class="wf-step-marker">
+        <div class="wf-dot"></div>
+        <div class="wf-step-num">04</div>
+      </div>
+      <div class="wf-step-body" data-stage="04">
+        <p class="wf-stage-label">Stage 04 — Visual Identity</p>
+        <h3 class="wf-stage-title">Build the visual language.</h3>
+        <p class="wf-stage-desc">With the concept and sound locked, visual direction came next. I used ChatGPT's image generation to develop a mood board and cover art — high contrast, Y2K-adjacent, bold typography, strobe aesthetic. The goal was a distinctive visual language that could scale across TikTok thumbnails, Instagram posts, and streaming art without losing coherence. The artwork you see on this page was selected from 12 generated variations, then used as the anchor for all other visual decisions.</p>
+        <div class="wf-bottom-row">
+          <div class="wf-tools">
+            <span class="wf-tool-pill">ChatGPT</span>
+          </div>
+          <div class="wf-prompt">
+            <div class="wf-prompt-label">Prompt used</div>
+            <div class="wf-prompt-text">"Make an artwork for a <em>'Pop IT Girl'</em> with a pop of colors that would be relatable to Gen-Z whilst keeping a nonchalant yet ethereal vibe. High contrast. Y2K energy. Bold enough to stop the scroll."</div>
+          </div>
+        </div>
+        <div class="wf-decision"><strong>Key decision:</strong> The cream, hot pink, and black palette that runs through this entire page was extracted directly from the AI-generated artwork — letting the asset lead the design system rather than forcing a preset palette onto it.</div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="wf-step reveal">
+      <div class="wf-step-marker">
+        <div class="wf-dot"></div>
+        <div class="wf-step-num">05</div>
+      </div>
+      <div class="wf-step-body" data-stage="05">
+        <p class="wf-stage-label">Stage 05 — Content & Copy</p>
+        <h3 class="wf-stage-title">Build the content machine.</h3>
+        <p class="wf-stage-desc">With strategy, sound, and visual identity set, execution became systematic. I used Claude to build the 6-week TikTok content calendar — generating post types, hook scripts, and caption variants for each week's distinct energy. For every post, I ran at least 5 caption variants and selected based on tension in the opening line. All copy was reviewed and edited by hand before going into the final page. AI writes fast; a human decides what survives.</p>
+        <div class="wf-bottom-row">
+          <div class="wf-tools">
+            <span class="wf-tool-pill">Claude</span>
+            <span class="wf-tool-pill">Opus Clip</span>
+          </div>
+          <div class="wf-prompt">
+            <div class="wf-prompt-label">Prompt used</div>
+            <div class="wf-prompt-text">"Write <em>5 TikTok caption options</em> for a Week 1 teaser post. Voice: Gen Z, slightly unhinged, confident. No hashtags yet. Each under 120 characters. The hook should create curiosity without revealing what the song is about."</div>
+          </div>
+        </div>
+        <div class="wf-decision"><strong>Key decision:</strong> Opus Clip was used to simulate the content repurposing workflow — demonstrating how long-form BTS footage would be auto-clipped into platform-native assets. This step would run in parallel with the content calendar in a real campaign.</div>
+      </div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="wf-step reveal">
+      <div class="wf-step-marker">
+        <div class="wf-dot"></div>
+        <div class="wf-step-num">06</div>
+      </div>
+      <div class="wf-step-body" data-stage="06">
+        <p class="wf-stage-label">Stage 06 — Production</p>
+        <h3 class="wf-stage-title">Build the campaign microsite.</h3>
+        <p class="wf-stage-desc">The final stage was turning the campaign into the page you're reading now — a fully designed, deployed microsite that presents the work as a living artifact rather than a slide deck. Built in HTML/CSS/JS with Claude, deployed via Netlify from a GitHub repo. The design system (typography, color, motion) was derived from the campaign assets rather than imposed on them. The audio player, scroll animations, and custom cursor were all built from scratch to match the campaign's energy.</p>
+        <div class="wf-bottom-row">
+          <div class="wf-tools">
+            <span class="wf-tool-pill">Claude</span>
+            <span class="wf-tool-pill">Netlify</span>
+            <span class="wf-tool-pill">GitHub</span>
+          </div>
+          <div class="wf-prompt">
+            <div class="wf-prompt-label">Approach</div>
+            <div class="wf-prompt-text">Iterative build — <em>concept → structure → section by section</em> — with Claude generating code and design decisions made collaboratively. Each section was reviewed, adjusted, and refined before moving to the next.</div>
+          </div>
+        </div>
+        <div class="wf-decision"><strong>Key decision:</strong> Chose a microsite over a PDF deck or Notion doc because the format itself signals capability. Anyone can make a slide deck. Building and deploying a designed, interactive page demonstrates a level of hands-on execution that a document can't.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- REFLECTIONS -->
+  <div class="wf-reflections reveal">
+    <div>
+      <p class="section-label" style="color: var(--hot);">Honest reflections</p>
+      <h3 class="wf-ref-heading">What I learned<br>building <em>this.</em></h3>
+    </div>
+    <ul class="wf-ref-list">
+      <li class="wf-ref-item">
+        <span class="wf-ref-arrow">→</span>
+        <p class="wf-ref-text"><strong>AI is fastest at volume and variation.</strong> The real skill isn't prompting — it's knowing which output to kill. Out of roughly 40 concept directions generated, exactly one was worth building. Judgment is the human layer that makes AI useful.</p>
+      </li>
+      <li class="wf-ref-item">
+        <span class="wf-ref-arrow">→</span>
+        <p class="wf-ref-text"><strong>Prompt quality compounds downstream.</strong> The audience personas I wrote in Stage 01 directly improved every output that followed. A precise brief produces precise outputs. Garbage in, garbage out holds even with frontier models.</p>
+      </li>
+      <li class="wf-ref-item">
+        <span class="wf-ref-arrow">→</span>
+        <p class="wf-ref-text"><strong>Sequence matters more than tools.</strong> Using the right tools in the wrong order produces incoherent work. Sound before visual. Concept before copy. Strategy before execution. The workflow is the product, not the individual outputs.</p>
+      </li>
+      <li class="wf-ref-item">
+        <span class="wf-ref-arrow">→</span>
+        <p class="wf-ref-text"><strong>In a real campaign, creator seeding happens earlier.</strong> Identifying and warming up micro-creators should start in Week 1, not Week 3 — giving them time to genuinely connect with the sound before the drop rather than receiving it as a briefed task.</p>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SCALABILITY CALLOUT -->
+  <div class="wf-scale-box reveal">
+    <div class="wf-scale-icon">↗</div>
+    <div>
+      <div class="wf-scale-label">This workflow scales</div>
+      <p class="wf-scale-text">Every stage documented here can be replicated for any artist, any genre, any market. The tools change; the logic doesn't. <strong>Brief → concept → sound → visual → content → production</strong> is a transferable framework for AI-assisted campaign work — applicable to music, brand launches, product campaigns, and editorial content operations at scale.</p>
+      <a href="zara-vale-case-study.html" style="display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--hot); text-decoration: none; font-weight: 500; transition: gap 0.2s;">See the full numbers: cost, time & output breakdown →</a>
+    </div>
+  </div>
+
+</section>
+
+<div class="divider"></div>
+
 <!-- COPY SAMPLES -->
 <section class="section-copy" id="copy">
   <div class="reveal">
-    <p class="section-label">04 / AI-Generated Copy Samples</p>
+    <p class="section-label">05 / AI-Generated Copy Samples</p>
     <h2 style="font-family: 'DM Serif Display', serif; font-size: clamp(36px, 5vw, 60px); line-height: 1.1; margin-top: 12px;">
       Real outputs,<br>real prompts
     </h2>
@@ -940,7 +1435,7 @@
 <!-- KPIs -->
 <section class="section-kpi" id="kpi">
   <div class="reveal">
-    <p class="section-label">05 / Success Metrics</p>
+    <p class="section-label">06 / Success Metrics</p>
     <h2 style="font-family: 'DM Serif Display', serif; font-size: clamp(36px, 5vw, 60px); line-height: 1.1; margin-top: 12px;">
       Hypothetical KPIs<br><em style="font-style:italic; color: var(--hot);">30-day targets</em>
     </h2>
@@ -1006,7 +1501,7 @@
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.12 });
+  }, { threshold: 0.1 });
   reveals.forEach(el => observer.observe(el));
 
   // Audio player
@@ -1052,7 +1547,6 @@
     hpTotal.textContent = formatTime(audio.duration);
   });
 
-  // Loop the chorus
   audio.addEventListener('ended', () => {
     audio.currentTime = 0;
     audio.play();
