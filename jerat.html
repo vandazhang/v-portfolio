@@ -303,12 +303,12 @@ footer{border-top:0.5px solid var(--border);padding:2.5rem 0;margin-top:2rem;}
     <p class="section-body" data-t="m2-body">Check your own debt risk profile, or calculate the true cost of any BNPL or lending product — with real rates from Indonesian and UK platforms.</p>
 
     <div class="tab-nav">
-      <button class="tb active" onclick="sw('chk')" data-t="tab-chk">Debt health check</button>
-      <button class="tb" onclick="sw('calc')" data-t="tab-calc">True cost calculator</button>
+      <button class="tb active" onclick="sw('calc')" data-t="tab-calc">True cost calculator</button>
+      <button class="tb" onclick="sw('chk')" data-t="tab-chk">Debt health check</button>
       <button class="tb" onclick="sw('data')" data-t="tab-data">Data &amp; context</button>
     </div>
 
-    <div id="tp-chk" class="tp active">
+    <div id="tp-chk" class="tp">
       <p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.65;" data-t="chk-intro">Answer honestly — nothing is saved or tracked. Your score is based on risk patterns identified by Indonesia's OJK financial regulator and fintech researchers. The patterns are universal.</p>
       <div class="fr2">
         <div class="fg"><label class="fl" data-t="chk-l-bnpl">How many active BNPL / Pay Later accounts do you have?</label>
@@ -339,7 +339,7 @@ footer{border-top:0.5px solid var(--border);padding:2.5rem 0;margin-top:2rem;}
       </div>
     </div>
 
-    <div id="tp-calc" class="tp">
+    <div id="tp-calc" class="tp active">
       <p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.65;" data-t="calc-intro">Select a real product, enter the purchase price, and see what you actually pay — including costs that aren't advertised upfront.</p>
       <div class="fr2">
         <div class="fg"><label class="fl" data-t="calc-l-price">Item price</label>
