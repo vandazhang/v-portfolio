@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Case Study — Zara Vale / STATIC</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0D0D0D;
+    --surface:  #141414;
+    --surface2: #1A1A1A;
+    --border:   rgba(255,255,255,0.07);
+    --border2:  rgba(255,255,255,0.12);
+    --hot:      #FF3366;
+    --hot-dim:  rgba(255,51,102,0.12);
+    --hot-mid:  rgba(255,51,102,0.25);
+    --cream:    #F5F0E8;
+    --accent:   #FFE566;
+    --text:     rgba(255,255,255,0.88);
+    --text-mid: rgba(255,255,255,0.55);
+    --text-dim: rgba(255,255,255,0.28);
+    --green:    #00E5A0;
+    --green-dim:rgba(0,229,160,0.1);
+    --blue:     #4FC3F7;
+    --blue-dim: rgba(79,195,247,0.1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* NOISE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 500;
+    padding: 20px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(13,13,13,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .nav-sep { color: var(--text-dim); font-size: 0.7rem; }
+  .nav-context {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--hot);
+    font-weight: 500;
+  }
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text-mid);
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-back {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text-dim);
+    font-weight: 500;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-back:hover { color: var(--text-mid); }
+
+  /* HERO */
+  .hero {
+    padding: 140px 48px 80px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: 'WHY AI';
+    position: absolute;
+    right: -20px;
+    bottom: -40px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 220px;
+    color: rgba(255,255,255,0.018);
+    letter-spacing: -0.02em;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+  }
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--hot);
+    font-weight: 500;
+    margin-bottom: 28px;
+    padding: 6px 14px;
+    border: 1px solid rgba(255,51,102,0.3);
+    background: var(--hot-dim);
+  }
+  .hero-tag-dot { width: 5px; height: 5px; background: var(--hot); border-radius: 50%; }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 7vw, 96px);
+    line-height: 0.92;
+    letter-spacing: 0.01em;
+    max-width: 760px;
+    margin-bottom: 32px;
+  }
+  .hero-title em {
+    font-style: italic;
+    font-family: 'DM Serif Display', serif;
+    color: var(--hot);
+    font-size: 0.85em;
+  }
+  .hero-deck {
+    font-size: 1rem;
+    line-height: 1.8;
+    font-weight: 300;
+    color: var(--text-mid);
+    max-width: 600px;
+    margin-bottom: 48px;
+  }
+  .hero-deck strong { color: var(--text); font-weight: 500; }
+
+  /* STAT BAR */
+  .stat-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--border2);
+    margin-top: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .stat-cell {
+    padding: 28px 32px;
+    border-right: 1px solid var(--border2);
+    position: relative;
+  }
+  .stat-cell:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 4vw, 56px);
+    line-height: 1;
+    color: var(--hot);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+  .stat-num.green { color: var(--green); }
+  .stat-num.blue { color: var(--blue); }
+  .stat-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .stat-sub {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  /* SECTION SCAFFOLDING */
+  .section {
+    padding: 96px 48px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .section-header {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 64px;
+    align-items: start;
+    margin-bottom: 64px;
+  }
+  .section-index {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    padding-top: 6px;
+  }
+  .section-index span {
+    display: block;
+    color: var(--hot);
+    font-size: 0.65rem;
+    margin-bottom: 4px;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    line-height: 1.05;
+    font-style: italic;
+  }
+  .section-title em { color: var(--hot); }
+  .section-body {
+    font-size: 0.92rem;
+    line-height: 1.85;
+    font-weight: 300;
+    color: var(--text-mid);
+    max-width: 640px;
+    margin-top: 16px;
+  }
+  .section-body strong { color: var(--text); font-weight: 500; }
+
+  /* WHY AI — ARGUMENT CARDS */
+  .argument-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .arg-card {
+    background: var(--surface);
+    padding: 40px 36px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s;
+  }
+  .arg-card:hover { background: var(--surface2); }
+  .arg-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+    position: absolute;
+    top: 16px;
+    right: 20px;
+  }
+  .arg-icon {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    font-size: 1.1rem;
+  }
+  .arg-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+  .arg-desc {
+    font-size: 0.82rem;
+    line-height: 1.75;
+    font-weight: 300;
+    color: var(--text-mid);
+    margin-bottom: 24px;
+  }
+  .arg-metric {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .arg-metric-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--hot);
+  }
+  .arg-metric-num.green { color: var(--green); }
+  .arg-metric-num.blue { color: var(--blue); }
+  .arg-metric-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+    font-weight: 300;
+    max-width: 160px;
+  }
+
+  /* COST COMPARISON */
+  .cost-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 48px;
+  }
+  .cost-col {
+    background: var(--surface);
+    padding: 40px;
+  }
+  .cost-col.highlight {
+    background: var(--hot-dim);
+    border: 1px solid rgba(255,51,102,0.2);
+  }
+  .cost-col-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .cost-col.highlight .cost-col-label { color: var(--hot); }
+  .cost-col-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    font-style: italic;
+    margin-bottom: 32px;
+    color: var(--text);
+  }
+  .cost-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+  }
+  .cost-row:last-of-type { border-bottom: none; }
+  .cost-row-label { color: var(--text-mid); font-weight: 300; }
+  .cost-row-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+  .cost-row-val.struck {
+    text-decoration: line-through;
+    color: var(--text-dim);
+  }
+  .cost-row-val.hot { color: var(--hot); }
+  .cost-row-val.green { color: var(--green); }
+  .cost-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: 20px;
+    margin-top: 8px;
+    border-top: 2px solid var(--border2);
+  }
+  .cost-total-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    font-weight: 500;
+  }
+  .cost-total-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    color: var(--text-dim);
+    letter-spacing: 0.03em;
+  }
+  .cost-total-val.hot { color: var(--hot); }
+  .cost-total-val.green { color: var(--green); }
+
+  /* A/B TESTING SECTION */
+  .ab-intro {
+    font-size: 0.92rem;
+    line-height: 1.85;
+    font-weight: 300;
+    color: var(--text-mid);
+    max-width: 640px;
+    margin-bottom: 48px;
+  }
+  .ab-intro strong { color: var(--text); font-weight: 500; }
+
+  .ab-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    margin-bottom: 32px;
+  }
+  .ab-table th {
+    text-align: left;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 500;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border2);
+    background: var(--surface);
+  }
+  .ab-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 300;
+    vertical-align: top;
+    line-height: 1.55;
+  }
+  .ab-table tr:last-child td { border-bottom: none; }
+  .ab-table tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+  .ab-table tr.winner td { background: rgba(0,229,160,0.04); }
+  .ab-winner-badge {
+    display: inline-block;
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    background: rgba(0,229,160,0.15);
+    color: var(--green);
+    border: 1px solid rgba(0,229,160,0.3);
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .ab-variant-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--hot);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .tension-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .tension-track {
+    flex: 1;
+    height: 3px;
+    background: var(--border2);
+    border-radius: 2px;
+    overflow: hidden;
+    max-width: 100px;
+  }
+  .tension-fill {
+    height: 100%;
+    background: var(--hot);
+    border-radius: 2px;
+  }
+  .tension-fill.green { background: var(--green); }
+  .tension-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    min-width: 28px;
+  }
+  .ab-method-box {
+    background: var(--surface);
+    border-left: 3px solid var(--hot);
+    padding: 24px 28px;
+    margin-top: 32px;
+  }
+  .ab-method-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--hot);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .ab-method-text {
+    font-size: 0.82rem;
+    line-height: 1.7;
+    font-weight: 300;
+    color: var(--text-mid);
+  }
+  .ab-method-text strong { color: var(--text); font-weight: 500; }
+
+  /* TIMELINE */
+  .timeline-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 16px;
+  }
+  .timeline-col {
+    background: var(--surface);
+    padding: 36px;
+  }
+  .timeline-col.ai-col {
+    background: rgba(255,51,102,0.06);
+    border: 1px solid rgba(255,51,102,0.15);
+  }
+  .timeline-col-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+    font-weight: 500;
+  }
+  .timeline-col.ai-col .timeline-col-label { color: var(--hot); }
+  .timeline-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    font-size: 0.8rem;
+  }
+  .timeline-row:last-child { border-bottom: none; }
+  .timeline-stage {
+    color: var(--text-dim);
+    font-weight: 300;
+    font-size: 0.78rem;
+  }
+  .timeline-duration {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .timeline-bar-wrap {
+    flex: 1;
+    height: 3px;
+    background: var(--border2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .timeline-bar-fill {
+    height: 100%;
+    background: var(--text-dim);
+    border-radius: 2px;
+  }
+  .timeline-bar-fill.hot { background: var(--hot); }
+  .timeline-dur-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    min-width: 52px;
+    text-align: right;
+  }
+  .timeline-dur-val.hot { color: var(--hot); }
+  .timeline-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    margin-top: 8px;
+    border-top: 1px solid var(--border2);
+  }
+  .timeline-total-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+  .timeline-total-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: var(--text-dim);
+  }
+  .timeline-total-val.hot { color: var(--hot); }
+
+  /* OUTPUT INVENTORY */
+  .output-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 16px;
+  }
+  .output-card {
+    background: var(--surface);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: background 0.2s;
+  }
+  .output-card:hover { background: var(--surface2); }
+  .output-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .output-card-name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .output-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--hot);
+    line-height: 1;
+  }
+  .output-tool {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 400;
+  }
+  .output-detail {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  /* VERDICT */
+  .verdict {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    padding: 56px;
+    margin-top: 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .verdict::before {
+    content: '→';
+    position: absolute;
+    right: 40px;
+    top: 40px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 120px;
+    color: rgba(255,51,102,0.05);
+    line-height: 1;
+  }
+  .verdict-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--hot);
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+  .verdict-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(22px, 3vw, 36px);
+    line-height: 1.4;
+    font-style: italic;
+    max-width: 760px;
+    margin-bottom: 40px;
+  }
+  .verdict-text em { color: var(--hot); }
+  .verdict-sub {
+    font-size: 0.88rem;
+    line-height: 1.8;
+    font-weight: 300;
+    color: var(--text-mid);
+    max-width: 600px;
+    margin-bottom: 40px;
+  }
+  .verdict-sub strong { color: var(--text); font-weight: 500; }
+  .verdict-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--hot);
+    color: white;
+    padding: 14px 32px;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 500;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .verdict-cta:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 rgba(255,255,255,0.1);
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 48px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-left {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+  }
+  .footer-left span { color: var(--hot); }
+  .footer-right {
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,51,102,0.3), transparent);
+    margin: 0;
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-d1 { transition-delay: 0.1s; }
+  .reveal-d2 { transition-delay: 0.2s; }
+  .reveal-d3 { transition-delay: 0.3s; }
+
+  /* LIMIT CARDS */
+  .limit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .limit-card {
+    background: var(--surface);
+    padding: 40px 36px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s;
+  }
+  .limit-card:hover { background: var(--surface2); }
+  .limit-icon {
+    width: 40px; height: 40px;
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 24px;
+    font-size: 1.1rem;
+  }
+  .limit-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    margin-bottom: 14px;
+    line-height: 1.2;
+    color: var(--text);
+  }
+  .limit-desc {
+    font-size: 0.82rem;
+    line-height: 1.75;
+    font-weight: 300;
+    color: var(--text-mid);
+    margin-bottom: 24px;
+  }
+  .limit-example {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border2);
+    border-left: 3px solid var(--text-dim);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .limit-example-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .limit-example-label.fix { color: var(--green); }
+  .limit-example.fixed { border-left-color: rgba(0,229,160,0.5); background: rgba(0,229,160,0.03); }
+  .limit-example-text {
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+  .limit-fix-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--green);
+    font-weight: 500;
+    margin-top: 16px;
+    margin-bottom: 6px;
+  }
+  .limit-fix-text {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+  .limit-fix-text strong { color: rgba(255,255,255,0.7); font-weight: 500; }
+
+  @media (max-width: 900px) {
+    .limit-grid { grid-template-columns: 1fr; }
+  }
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 24px 60px; }
+    .stat-bar { grid-template-columns: 1fr 1fr; }
+    .stat-cell { border-bottom: 1px solid var(--border2); }
+    .section { padding: 64px 24px; }
+    .section-header { grid-template-columns: 1fr; gap: 24px; }
+    .argument-grid { grid-template-columns: 1fr; }
+    .cost-grid { grid-template-columns: 1fr; }
+    .timeline-compare { grid-template-columns: 1fr; }
+    .output-grid { grid-template-columns: 1fr 1fr; }
+    .verdict { padding: 36px 28px; }
+    footer { flex-direction: column; gap: 16px; text-align: center; padding: 32px 24px; }
+    .footer-right { text-align: center; }
+    .ab-table { display: block; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="zara-vale-campaign.html" class="nav-logo">Zara Vale</a>
+    <span class="nav-sep">/</span>
+    <span class="nav-context">AI Case Study</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#why">Why AI</a></li>
+    <li><a href="#cost">Cost</a></li>
+    <li><a href="#testing">Testing</a></li>
+    <li><a href="#timeline">Timeline</a></li>
+    <li><a href="#limits">Where AI Failed</a></li>
+    <li><a href="#outputs">Outputs</a></li>
+  </ul>
+  <a href="zara-vale-campaign.html" class="nav-back">← View campaign</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">
+    <span class="hero-tag-dot"></span>
+    AI Workflow Case Study — Zara Vale / STATIC
+  </div>
+  <h1 class="hero-title">
+    THE ARGUMENT<br>FOR BUILDING WITH <em>AI.</em>
+  </h1>
+  <p class="hero-deck">
+    Not about the campaign — about <strong>why AI was used to build it</strong> and what it actually delivered. Every number is documented.
+  </p>
+
+  <!-- HEADLINE STATS -->
+  <div class="stat-bar reveal">
+    <div class="stat-cell">
+      <div class="stat-num">~80%</div>
+      <div class="stat-label">Faster delivery</div>
+      <div class="stat-sub">vs. traditional agency timeline for equivalent scope</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num green">£0</div>
+      <div class="stat-label">Production budget</div>
+      <div class="stat-sub">vs. estimated £15–25k agency equivalent cost</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num blue">40+</div>
+      <div class="stat-label">Concepts generated</div>
+      <div class="stat-sub">across all stages before final selections were made</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">12+</div>
+      <div class="stat-label">Deliverables produced</div>
+      <div class="stat-sub">by 1 person, across 4 tools, in ~2 weeks</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 01 — WHY AI -->
+<section class="section" id="why">
+  <div class="section-header reveal">
+    <div class="section-index">
+      <span>Section 01</span>
+      WHY AI AT ALL
+    </div>
+    <div>
+      <h2 class="section-title">Three reasons AI wins<br>for <em>this kind of work.</em></h2>
+      <p class="section-body">
+        Not a replacement for creative judgment — a multiplier for it. Three things: <strong>speed, scale, cost.</strong>
+      </p>
+    </div>
+  </div>
+
+  <div class="argument-grid">
+    <div class="arg-card reveal">
+      <div class="arg-num">01</div>
+      <div class="arg-icon">⚡</div>
+      <h3 class="arg-title">Speed of iteration</h3>
+      <p class="arg-desc">Each new concept direction takes minutes, not days. More ideas tested before committing = better final selection = better campaigns.</p>
+      <div class="arg-metric">
+        <div class="arg-metric-num">5×</div>
+        <div class="arg-metric-label">more concept directions explored vs. a typical solo brief</div>
+      </div>
+    </div>
+    <div class="arg-card reveal reveal-d1">
+      <div class="arg-num">02</div>
+      <div class="arg-icon">📐</div>
+      <h3 class="arg-title">Scale of output</h3>
+      <p class="arg-desc">One person can generate and curate campaign-scale copy — across platforms, tones, and formats — in a fraction of the time a team would need, without losing brand voice consistency.</p>
+      <div class="arg-metric">
+        <div class="arg-metric-num green">12+</div>
+        <div class="arg-metric-label">distinct deliverables produced solo in ~2 weeks</div>
+      </div>
+    </div>
+    <div class="arg-card reveal reveal-d2">
+      <div class="arg-num">03</div>
+      <div class="arg-icon">🎯</div>
+      <h3 class="arg-title">Cost of experimentation</h3>
+      <p class="arg-desc">Generate 5–10 variants, select based on structural tension and platform fit — before any budget is spent. Experimentation happens in the brief, not in market.</p>
+      <div class="arg-metric">
+        <div class="arg-metric-num blue">£0</div>
+        <div class="arg-metric-label">spent testing 40+ variants before a single post went live</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION 02 — COST COMPARISON -->
+<section class="section" id="cost">
+  <div class="section-header reveal">
+    <div class="section-index">
+      <span>Section 02</span>
+      COST COMPARISON
+    </div>
+    <div>
+      <h2 class="section-title">What this would have<br><em>cost without AI.</em></h2>
+      <p class="section-body">
+        Full agency deliverable set — concept, strategy, copy, visual, audio, content plan, microsite. Here's the UK market rate vs. what it actually cost.
+      </p>
+    </div>
+  </div>
+
+  <div class="cost-grid reveal">
+    <div class="cost-col">
+      <div class="cost-col-label">Traditional approach</div>
+      <div class="cost-col-title">Agency / freelance team</div>
+      <div class="cost-row">
+        <span class="cost-row-label">Campaign strategy & concept</span>
+        <span class="cost-row-val struck">£3,000–5,000</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-label">Copywriter (all deliverables)</span>
+        <span class="cost-row-val struck">£2,000–4,000</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-label">Visual direction / mood board</span>
+        <span class="cost-row-val struck">£1,500–3,000</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-label">Audio demo / sonic reference</span>
+        <span class="cost-row-val struck">£1,000–2,500</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-label">Content calendar (6 weeks)</span>
+        <span class="cost-row-val struck">£1,500–2,500</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-label">Campaign microsite build</span>
+        <span class="cost-row-val struck">£3,000–6,000</span>
+      </div>
+      <div class="cost-total">
+        <span class="cost-total-label">Estimated total</span>
+        <span class="cost-total-val">£12–23K</span>
+      </div>
+    </div>
+    <div class="cost-col highlight">
+      <div class="cost-col-label">AI-assisted approach</div>
+      <div class="cost-col-title">Solo + AI tools</div>
+      <div class="cost-row">
+        <span class="cost-row-label">Campaign strategy & concept</span>
+        <span class="cost-row-val hot">Claude (free tier)</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-label">Copywriter (all deliverables)</span>
+        <span class="cost-row-val hot">Claude (free tier)</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-label">Visual direction / mood board</span>
+        <span class="cost-row-val hot">ChatGPT (free tier)</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-label">Audio demo / sonic reference</span>
+        <span class="cost-row-val hot">Suno AI (free tier)</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-label">Content calendar (6 weeks)</span>
+        <span class="cost-row-val hot">Claude (free tier)</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-label">Campaign microsite build</span>
+        <span class="cost-row-val hot">Claude + Netlify (free)</span>
+      </div>
+      <div class="cost-total">
+        <span class="cost-total-label">Actual total</span>
+        <span class="cost-total-val green">£0</span>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size: 0.72rem; color: var(--text-dim); margin-top: 16px; line-height: 1.6;">
+    * Agency estimates based on UK mid-market rates for independent music campaigns (2025–2026). Actual costs vary by scope and agency tier. This comparison illustrates the scale of cost compression AI enables — not a claim that AI output is equivalent to senior agency creative work in all respects.
+  </p>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION 03 — A/B TESTING -->
+<section class="section" id="testing">
+  <div class="section-header reveal">
+    <div class="section-index">
+      <span>Section 03</span>
+      VARIANT TESTING
+    </div>
+    <div>
+      <h2 class="section-title">Why generate 5 versions<br>when you only <em>post one.</em></h2>
+    </div>
+  </div>
+
+  <p class="ab-intro reveal">
+    <strong>Pre-launch variant testing:</strong> generate multiple options, select based on structural analysis — no ad spend, no waiting for data. Below: five real caption variants for the Week 1 teaser, evaluated on <strong>opening line tension</strong> and <strong>platform fit.</strong>
+  </p>
+
+  <table class="ab-table reveal">
+    <thead>
+      <tr>
+        <th style="width: 6%">V</th>
+        <th style="width: 40%">Caption variant</th>
+        <th style="width: 20%">Opening tension</th>
+        <th style="width: 20%">Platform fit</th>
+        <th style="width: 14%">Decision</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="ab-variant-label">V1</span></td>
+        <td style="color: var(--text-mid); font-size: 0.8rem;">"something's coming. can you feel it? 🎵"</td>
+        <td>
+          <div class="tension-bar">
+            <div class="tension-track"><div class="tension-fill" style="width: 35%"></div></div>
+            <span class="tension-val" style="color: var(--text-dim);">Low</span>
+          </div>
+        </td>
+        <td>
+          <div class="tension-bar">
+            <div class="tension-track"><div class="tension-fill" style="width: 55%"></div></div>
+            <span class="tension-val" style="color: var(--text-dim);">Mid</span>
+          </div>
+        </td>
+        <td style="color: var(--text-dim); font-size: 0.75rem;">Too vague — no hook</td>
+      </tr>
+      <tr>
+        <td><span class="ab-variant-label">V2</span></td>
+        <td style="color: var(--text-mid); font-size: 0.8rem;">"i've been making this song for 6 months and i'm terrified to post it"</td>
+        <td>
+          <div class="tension-bar">
+            <div class="tension-track"><div class="tension-fill" style="width: 70%"></div></div>
+            <span class="tension-val" style="color: var(--text-mid);">High</span>
+          </div>
+        </td>
+        <td>
+          <div class="tension-bar">
+            <div class="tension-track"><div class="tension-fill" style="width: 75%"></div></div>
+            <span class="tension-val" style="color: var(--text-mid);">High</span>
+          </div>
+        </td>
+        <td style="color: var(--text-dim); font-size: 0.75rem;">Strong but wrong tone — too vulnerable for Anti-Wallflower</td>
+      </tr>
+      <tr class="winner">
+        <td><span class="ab-variant-label">V3</span></td>
+        <td style="color: var(--text); font-size: 0.8rem; font-weight: 400;">"POV: you hear a song and you can't stop moving even though you don't know the words yet" <span class="ab-winner-badge">Selected</span></td>
+        <td>
+          <div class="tension-bar">
+            <div class="tension-track"><div class="tension-fill green" style="width: 92%"></div></div>
+            <span class="tension-val" style="color: var(--green);">Very high</span>
+          </div>
+        </td>
+        <td>
+          <div class="tension-bar">
+            <div class="tension-track"><div class="tension-fill green" style="width: 95%"></div></div>
+            <span class="tension-val" style="color: var(--green);">Native</span>
+          </div>
+        </td>
+        <td style="color: var(--green); font-size: 0.75rem;">POV format = native TikTok. Creates curiosity without overexplaining.</td>
+      </tr>
+      <tr>
+        <td><span class="ab-variant-label">V4</span></td>
+        <td style="color: var(--text-mid); font-size: 0.8rem;">"debut single. dropping soon. this is your warning 🔇"</td>
+        <td>
+          <div class="tension-bar">
+            <div class="tension-track"><div class="tension-fill" style="width: 60%"></div></div>
+            <span class="tension-val" style="color: var(--text-mid);">Mid</span>
+          </div>
+        </td>
+        <td>
+          <div class="tension-bar">
+            <div class="tension-track"><div class="tension-fill" style="width: 65%"></div></div>
+            <span class="tension-val" style="color: var(--text-mid);">Mid</span>
+          </div>
+        </td>
+        <td style="color: var(--text-dim); font-size: 0.75rem;">Announcing rather than showing — low engagement trigger</td>
+      </tr>
+      <tr>
+        <td><span class="ab-variant-label">V5</span></td>
+        <td style="color: var(--text-mid); font-size: 0.8rem;">"what does it feel like when a song finds you before you find it"</td>
+        <td>
+          <div class="tension-bar">
+            <div class="tension-track"><div class="tension-fill" style="width: 80%"></div></div>
+            <span class="tension-val" style="color: var(--text-mid);">High</span>
+          </div>
+        </td>
+        <td>
+          <div class="tension-bar">
+            <div class="tension-track"><div class="tension-fill" style="width: 45%"></div></div>
+            <span class="tension-val" style="color: var(--text-dim);">Low</span>
+          </div>
+        </td>
+        <td style="color: var(--text-dim); font-size: 0.75rem;">Too literary — reads like Instagram, not TikTok</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="ab-method-box reveal">
+    <div class="ab-method-label">Why this matters for content ops</div>
+    <p class="ab-method-text">
+      <strong>Generate variants → evaluate against defined criteria → select with documented reasoning.</strong> This framework scales to any content operation — playlist copy, brand campaigns, editorial testing — without additional headcount.
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION 04 — TIMELINE -->
+<section class="section" id="timeline">
+  <div class="section-header reveal">
+    <div class="section-index">
+      <span>Section 04</span>
+      TIMELINE COMPARISON
+    </div>
+    <div>
+      <h2 class="section-title">Same scope. A fraction<br>of the <em>time.</em></h2>
+      <p class="section-body">
+        Concept to deployed microsite. Agency: 6–10 weeks. AI-assisted: ~2 weeks.
+      </p>
+    </div>
+  </div>
+
+  <div class="timeline-compare reveal">
+    <div class="timeline-col">
+      <div class="timeline-col-label">Traditional agency timeline</div>
+      <div class="timeline-row">
+        <span class="timeline-stage">Brief & strategy</span>
+        <div class="timeline-duration">
+          <div class="timeline-bar-wrap"><div class="timeline-bar-fill" style="width: 100%"></div></div>
+          <span class="timeline-dur-val">1–2 weeks</span>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <span class="timeline-stage">Concept development</span>
+        <div class="timeline-duration">
+          <div class="timeline-bar-wrap"><div class="timeline-bar-fill" style="width: 90%"></div></div>
+          <span class="timeline-dur-val">1–2 weeks</span>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <span class="timeline-stage">Visual direction</span>
+        <div class="timeline-duration">
+          <div class="timeline-bar-wrap"><div class="timeline-bar-fill" style="width: 80%"></div></div>
+          <span class="timeline-dur-val">1 week</span>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <span class="timeline-stage">Copy & content plan</span>
+        <div class="timeline-duration">
+          <div class="timeline-bar-wrap"><div class="timeline-bar-fill" style="width: 90%"></div></div>
+          <span class="timeline-dur-val">1–2 weeks</span>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <span class="timeline-stage">Microsite build</span>
+        <div class="timeline-duration">
+          <div class="timeline-bar-wrap"><div class="timeline-bar-fill" style="width: 100%"></div></div>
+          <span class="timeline-dur-val">2–3 weeks</span>
+        </div>
+      </div>
+      <div class="timeline-total">
+        <span class="timeline-total-label">Total</span>
+        <span class="timeline-total-val">6–10 weeks</span>
+      </div>
+    </div>
+
+    <div class="timeline-col ai-col">
+      <div class="timeline-col-label">AI-assisted timeline</div>
+      <div class="timeline-row">
+        <span class="timeline-stage">Brief & strategy</span>
+        <div class="timeline-duration">
+          <div class="timeline-bar-wrap"><div class="timeline-bar-fill hot" style="width: 12%"></div></div>
+          <span class="timeline-dur-val hot">1–2 days</span>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <span class="timeline-stage">Concept development</span>
+        <div class="timeline-duration">
+          <div class="timeline-bar-wrap"><div class="timeline-bar-fill hot" style="width: 10%"></div></div>
+          <span class="timeline-dur-val hot">1 day</span>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <span class="timeline-stage">Visual direction</span>
+        <div class="timeline-duration">
+          <div class="timeline-bar-wrap"><div class="timeline-bar-fill hot" style="width: 8%"></div></div>
+          <span class="timeline-dur-val hot">Half day</span>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <span class="timeline-stage">Copy & content plan</span>
+        <div class="timeline-duration">
+          <div class="timeline-bar-wrap"><div class="timeline-bar-fill hot" style="width: 14%"></div></div>
+          <span class="timeline-dur-val hot">2 days</span>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <span class="timeline-stage">Microsite build</span>
+        <div class="timeline-duration">
+          <div class="timeline-bar-wrap"><div class="timeline-bar-fill hot" style="width: 20%"></div></div>
+          <span class="timeline-dur-val hot">3–4 days</span>
+        </div>
+      </div>
+      <div class="timeline-total">
+        <span class="timeline-total-label">Total</span>
+        <span class="timeline-total-val hot">~2 weeks</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION 05 — WHERE AI FAILED -->
+<section class="section" id="limits">
+  <div class="section-header reveal">
+    <div class="section-index">
+      <span>Section 05</span>
+      WHERE AI FAILED
+    </div>
+    <div>
+      <h2 class="section-title">What AI got wrong —<br>and <em>why that matters.</em></h2>
+      <p class="section-body">
+        AI is a powerful tool with real blind spots. These are three cases where the AI suggestions sounded good on paper — and fell apart the moment real platform logic was applied.
+      </p>
+    </div>
+  </div>
+
+  <div class="limit-grid">
+
+    <div class="limit-card reveal">
+      <div class="limit-icon">👤</div>
+      <h3 class="limit-title">No platform logic</h3>
+      <p class="limit-desc">AI thinks in narratives, not in mechanics. It can suggest a compelling concept without considering whether it's actually executable on the platform.</p>
+      <div class="limit-example">
+        <div class="limit-example-label">AI suggested</div>
+        <p class="limit-example-text">"Start with a mysterious shadowy figure to build intrigue and suspense before the artist reveal."</p>
+      </div>
+      <div class="limit-fix-label">Why it fails</div>
+      <p class="limit-fix-text">Sounds cinematic. But — <strong>posted from whose account?</strong> A brand new page with zero followers posting shadowy content gets zero reach. There's no existing audience to build suspense for, and no algorithmic reason for TikTok to push it. The concept assumes an audience that doesn't exist yet.</p>
+      <div class="limit-example fixed" style="margin-top: 16px;">
+        <div class="limit-example-label fix">What replaced it</div>
+        <p class="limit-example-text">Zara appears immediately — personality-first from Day 1 to build a follow-worthy account before the drop.</p>
+      </div>
+    </div>
+
+    <div class="limit-card reveal reveal-d1">
+      <div class="limit-icon">📅</div>
+      <h3 class="limit-title">Outdated trend awareness</h3>
+      <p class="limit-desc">AI's training data has a lag. It knows what worked in 2021 — not what's native on the platform right now. You have to be the trend filter.</p>
+      <div class="limit-example">
+        <div class="limit-example-label">AI suggested</div>
+        <p class="limit-example-text">"Use TikTok Duets with established creators to tap into their audiences and drive discovery."</p>
+      </div>
+      <div class="limit-fix-label">Why it fails</div>
+      <p class="limit-fix-text">Duets as a growth tactic peaked around 2021–2022. In 2026, they feel forced and low-effort unless both creators are physically together or it's genuinely organic. <strong>No creator wants to duet an unknown artist they've never heard of.</strong> It's also just not how TikTok discovery works anymore — the For You algorithm has moved on.</p>
+      <div class="limit-example fixed" style="margin-top: 16px;">
+        <div class="limit-example-label fix">What replaced it</div>
+        <p class="limit-example-text">Micro-creator seeding with the sound pre-release — creators post independently, which signals organic adoption to the algorithm.</p>
+      </div>
+    </div>
+
+    <div class="limit-card reveal reveal-d2">
+      <div class="limit-icon">🧠</div>
+      <h3 class="limit-title">No social intuition</h3>
+      <p class="limit-desc">AI optimises for "interesting concept." It has no sense of clout, social proof, or why a real person would actually stop scrolling and follow.</p>
+      <div class="limit-example">
+        <div class="limit-example-label">AI suggested</div>
+        <p class="limit-example-text">"Post abstract aesthetic content — no face, no voice — to establish visual identity before launch."</p>
+      </div>
+      <div class="limit-fix-label">Why it fails</div>
+      <p class="limit-fix-text">People follow <strong>people</strong> on TikTok, not aesthetics. Abstract visual content might work for an established brand with existing equity — for a zero-follower artist, it just looks like a mood board account. There's no reason to follow, no personality to connect with, no human hook.</p>
+      <div class="limit-example fixed" style="margin-top: 16px;">
+        <div class="limit-example-label fix">What replaced it</div>
+        <p class="limit-example-text">Zara's personality leads everything — direct camera, relatable tone, "Anti-Wallflower" attitude visible from the first video.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="ab-method-box reveal" style="margin-top: 32px;">
+    <div class="ab-method-label">The real skill</div>
+    <p class="ab-method-text">
+      AI doesn't know what it doesn't know — it presents every suggestion with equal confidence. <strong>The human layer is knowing which outputs to trust and which to override.</strong> Platform intuition, trend awareness, and social context aren't things you can prompt your way into. They come from experience — and that's what makes the workflow actually work.
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION 06 — OUTPUT INVENTORY -->
+<section class="section" id="outputs">
+  <div class="section-header reveal">
+    <div class="section-index">
+      <span>Section 06</span>
+      OUTPUT INVENTORY
+    </div>
+    <div>
+      <h2 class="section-title">Everything produced.<br><em>One person. Four tools.</em></h2>
+      <p class="section-body">
+        Full inventory of every deliverable — what it was, how many variants, which tool.
+      </p>
+    </div>
+  </div>
+
+  <div class="output-grid reveal">
+    <div class="output-card">
+      <div class="output-card-top">
+        <span class="output-card-name">Audience personas</span>
+        <span class="output-count">9</span>
+      </div>
+      <span class="output-tool">Claude</span>
+      <span class="output-detail">3 rounds, 3 personas each. Final 3 locked for targeting.</span>
+    </div>
+    <div class="output-card">
+      <div class="output-card-top">
+        <span class="output-card-name">Campaign concept directions</span>
+        <span class="output-count">40+</span>
+      </div>
+      <span class="output-tool">Claude</span>
+      <span class="output-detail">Across multiple sessions. 1 selected. Volume is intentional.</span>
+    </div>
+    <div class="output-card">
+      <div class="output-card-top">
+        <span class="output-card-name">TikTok hook scripts</span>
+        <span class="output-count">30+</span>
+      </div>
+      <span class="output-tool">Claude</span>
+      <span class="output-detail">5+ variants per week across 6 campaign weeks.</span>
+    </div>
+    <div class="output-card">
+      <div class="output-card-top">
+        <span class="output-card-name">Caption variants</span>
+        <span class="output-count">25+</span>
+      </div>
+      <span class="output-tool">Claude</span>
+      <span class="output-detail">5 variants minimum per post type before selection.</span>
+    </div>
+    <div class="output-card">
+      <div class="output-card-top">
+        <span class="output-card-name">Long-form copy pieces</span>
+        <span class="output-count">4</span>
+      </div>
+      <span class="output-tool">Claude</span>
+      <span class="output-detail">Press release, Spotify bio, IG caption, creator DM. All hand-edited.</span>
+    </div>
+    <div class="output-card">
+      <div class="output-card-top">
+        <span class="output-card-name">Visual / artwork variations</span>
+        <span class="output-count">12</span>
+      </div>
+      <span class="output-tool">ChatGPT</span>
+      <span class="output-detail">Final artwork became the design system anchor for the whole page.</span>
+    </div>
+    <div class="output-card">
+      <div class="output-card-top">
+        <span class="output-card-name">Audio prototypes</span>
+        <span class="output-count">6</span>
+      </div>
+      <span class="output-tool">Suno AI</span>
+      <span class="output-detail">Variation 4 selected for the 30-second chorus preview.</span>
+    </div>
+    <div class="output-card">
+      <div class="output-card-top">
+        <span class="output-card-name">Short-form video assets</span>
+        <span class="output-count">20+</span>
+      </div>
+      <span class="output-tool">Opus Clip</span>
+      <span class="output-detail">Auto-clipped from BTS footage. Platform-native ratios and captions applied.</span>
+    </div>
+    <div class="output-card">
+      <div class="output-card-top">
+        <span class="output-card-name">Campaign microsite</span>
+        <span class="output-count">1</span>
+      </div>
+      <span class="output-tool">Claude + Netlify</span>
+      <span class="output-detail">Fully designed, interactive, deployed. Built and live in under a week.</span>
+    </div>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="verdict reveal">
+    <div class="verdict-label">The takeaway</div>
+    <p class="verdict-text">
+      AI didn't make this campaign. <em>Judgment did.</em> AI made judgment faster, cheaper, and more scalable.
+    </p>
+    <p class="verdict-sub">
+      The value isn't that AI replaces creative thinking — it's that it <strong>removes the bottlenecks that slow creative thinking down.</strong> But as the failures above show, AI has no platform instinct, no trend awareness, and no social intuition. Those come from experience. The workflow works because both halves are present — AI handles the volume, a human handles the judgment.
+    </p>
+    <a href="zara-vale-campaign.html" class="verdict-cta">See the campaign that came out of this →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">Zara <span>Vale</span> — AI Case Study</div>
+  <div class="footer-right">
+    Part of Vanda Andrian's portfolio<br>
+    vandrian.netlify.app · © 2026
+  </div>
+</footer>
+
+<script>
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
