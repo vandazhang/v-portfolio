@@ -194,13 +194,9 @@
     gap: 0;
     border-top: 1px solid var(--line);
     padding: 48px 0;
-    text-decoration: none;
     color: inherit;
-    transition: opacity 0.2s;
-    cursor: pointer;
   }
   .case-study:last-child { border-bottom: 1px solid var(--line); }
-  .case-study:hover .cs-arrow { transform: translate(4px, -4px); }
   .case-meta { padding-right: 48px; }
   .cs-number {
     font-size: 0.62rem;
@@ -237,7 +233,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }
   .cs-tag {
     font-size: 0.68rem;
@@ -253,10 +249,36 @@
     align-items: center;
   }
   .cs-year { font-size: 0.75rem; color: var(--mid); }
-  .cs-arrow {
-    font-size: 1.1rem;
-    transition: transform 0.25s;
+
+  /* PROJECT BUTTONS */
+  .cs-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
   }
+  .cs-btn {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 9px 18px;
+    border: 1px solid var(--black);
+    color: var(--black);
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cs-btn:hover { background: var(--black); color: var(--white); }
+  .cs-btn-ghost {
+    border-color: var(--line);
+    color: var(--mid);
+  }
+  .cs-btn-ghost:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+
   .cs-highlight {
     display: inline-flex;
     gap: 6px;
@@ -270,23 +292,6 @@
     margin-bottom: 20px;
   }
   .cs-highlight span { font-size: 10px; }
-
-  /* PLACEHOLDER CARDS */
-  .placeholder-card {
-    border: 1px dashed var(--line);
-    padding: 48px 32px;
-    text-align: center;
-    color: var(--mid);
-    font-size: 0.82rem;
-    line-height: 1.7;
-  }
-  .placeholder-card strong {
-    display: block;
-    font-size: 1rem;
-    font-weight: 500;
-    margin-bottom: 8px;
-    color: var(--black);
-  }
 
   /* ABOUT */
   .about-grid {
@@ -386,6 +391,8 @@
     .about-grid { grid-template-columns: 1fr; gap: 48px; }
     .contact-section { padding: 64px 24px 80px; }
     footer { padding: 20px 24px; flex-direction: column; gap: 8px; text-align: center; }
+    .cs-buttons { flex-direction: column; }
+    .cs-btn { justify-content: center; }
   }
 </style>
 </head>
@@ -409,7 +416,7 @@
   <p class="hero-tag reveal">Marketing — Strategy & Creative</p>
   <h1 class="hero-name reveal reveal-d1">Vanda<br><em>Andrian</em></h1>
   <p class="hero-title reveal reveal-d2">Marketing that moves people.</p>
-  <p class="hero-desc reveal reveal-d3">I build campaigns that earn attention — from brand strategy to content that converts. This portfolio showcases marketing projects, creative experiments, and interactive tools built around audience insight and digital culture. </p>
+  <p class="hero-desc reveal reveal-d3">I build campaigns that earn attention — from brand strategy to content that converts. This portfolio showcases marketing projects, creative experiments, and interactive tools built around audience insight and digital culture.</p>
   <div class="hero-links reveal reveal-d3">
     <a href="#work" class="link-primary">View work</a>
     <a href="#contact" class="link-secondary">Get in touch →</a>
@@ -463,7 +470,7 @@
   <div class="work-grid">
 
     <!-- CASE STUDY 1 — Zara Vale -->
-    <div class="case-study reveal" onclick="window.open('zara-vale-campaign.html', '_blank')">
+    <div class="case-study reveal">
       <div class="case-meta">
         <p class="cs-number">01</p>
         <p class="cs-client">Music / Entertainment</p>
@@ -483,13 +490,16 @@
         </div>
         <div class="cs-footer">
           <span class="cs-year">2026 — Mock Campaign</span>
-          <span class="cs-arrow">↗</span>
+          <div class="cs-buttons">
+            <a href="zara-vale-campaign.html" target="_blank" class="cs-btn">View campaign ↗</a>
+            <a href="zara-vale-case-study.html" target="_blank" class="cs-btn cs-btn-ghost">AI case study ↗</a>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- CASE STUDY 2 — Rina Sastra -->
-    <div class="case-study reveal" onclick="window.open('rina-sastra-analysis.html', '_blank')">
+    <div class="case-study reveal">
       <div class="case-meta">
         <p class="cs-number">02</p>
         <p class="cs-client">Music / Data Analysis</p>
@@ -509,13 +519,15 @@
         </div>
         <div class="cs-footer">
           <span class="cs-year">2026 — Mock Project</span>
-          <span class="cs-arrow">↗</span>
+          <div class="cs-buttons">
+            <a href="rina-sastra-analysis.html" target="_blank" class="cs-btn">View project ↗</a>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- CASE STUDY 3 — JERAT -->
-    <div class="case-study reveal" onclick="window.open('jerat.html', '_blank')">
+    <div class="case-study reveal">
       <div class="case-meta">
         <p class="cs-number">03</p>
         <p class="cs-client">Finance / Public Awareness</p>
@@ -535,13 +547,15 @@
         </div>
         <div class="cs-footer">
           <span class="cs-year">2026 — Interactive Feature</span>
-          <span class="cs-arrow">↗</span>
+          <div class="cs-buttons">
+            <a href="jerat.html" target="_blank" class="cs-btn">View project ↗</a>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- CASE STUDY 4 — Audience Intelligence Tool -->
-    <div class="case-study reveal" onclick="window.open('audience-intelligence.html', '_blank')">
+    <div class="case-study reveal">
       <div class="case-meta">
         <p class="cs-number">04</p>
         <p class="cs-client">Music / Audience Research</p>
@@ -561,13 +575,15 @@
         </div>
         <div class="cs-footer">
           <span class="cs-year">2026 — Live Tool</span>
-          <span class="cs-arrow">↗</span>
+          <div class="cs-buttons">
+            <a href="audience-intelligence.html" target="_blank" class="cs-btn">View project ↗</a>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- CASE STUDY 5 — Spurs Relegation Simulator -->
-    <div class="case-study reveal" onclick="window.open('spurs-relegation-simulator.html', '_blank')">
+    <div class="case-study reveal">
       <div class="case-meta">
         <p class="cs-number">05</p>
         <p class="cs-client">Sports / Finance</p>
@@ -576,7 +592,7 @@
       <div class="case-body">
         <div>
           <div class="cs-highlight"><span>★</span> Interactive Tool</div>
-          <p class="cs-desc"> Explore the real-money consequences of Tottenham Hotspur's relegation from the Premier League using this interactive simulation tool. Users can adjust variables — wage bills, transfer scenarios, broadcast revenue loss — and see the projected financial impact play out in real time.</p>
+          <p class="cs-desc">Explore the real-money consequences of Tottenham Hotspur's relegation from the Premier League using this interactive simulation tool. Users can adjust variables — wage bills, transfer scenarios, broadcast revenue loss — and see the projected financial impact play out in real time.</p>
           <div class="cs-tags">
             <span class="cs-tag">Financial Modelling</span>
             <span class="cs-tag">Sports Analytics</span>
@@ -587,7 +603,9 @@
         </div>
         <div class="cs-footer">
           <span class="cs-year">2026 — Interactive Tool</span>
-          <span class="cs-arrow">↗</span>
+          <div class="cs-buttons">
+            <a href="spurs-relegation-simulator.html" target="_blank" class="cs-btn">View project ↗</a>
+          </div>
         </div>
       </div>
     </div>
@@ -603,8 +621,8 @@
   <div class="about-grid">
     <div class="about-text reveal">
       <p>I'm Vanda — a marketing professional who thinks in campaigns and executes in content. I work at the intersection of strategy, creative, and technology, building brand stories that reach the right people at the right moment.</p>
-      <p>Recently, I’ve become especially interested in how AI tools are reshaping modern marketing workflows — not by replacing creative thinking, but by making experimentation, iteration, and production dramatically faster.</p>
-      <p>Beyond marketing itself, I’m interested in digital culture, consumer behavior, and how technology influences the way people spend attention, money, and time online. I’m especially curious about the balance between rapid digital growth and building products, platforms, or campaigns that people genuinely trust.</p>
+      <p>Recently, I've become especially interested in how AI tools are reshaping modern marketing workflows — not by replacing creative thinking, but by making experimentation, iteration, and production dramatically faster.</p>
+      <p>Beyond marketing itself, I'm interested in digital culture, consumer behavior, and how technology influences the way people spend attention, money, and time online. I'm especially curious about the balance between rapid digital growth and building products, platforms, or campaigns that people genuinely trust.</p>
       <p>Outside of work, I spend an unreasonable amount of time watching football (unfortunately as a Tottenham Hotspur F.C. fan), playing golf and tennis, and increasingly obsessing over sports strategy and tactical analysis.</p>
     </div>
     <div class="about-info reveal reveal-d1">
@@ -626,7 +644,7 @@
       </div>
       <div class="info-row">
         <span class="info-key">Status</span>
-        <span class="info-val" style="color: #22c55e;">Available for projects</span>
+        <span class="info-val" style="color: #22c55e;">Open to new opportunities</span>
       </div>
     </div>
   </div>
