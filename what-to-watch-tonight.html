@@ -651,8 +651,7 @@ async function loadProviders(region) {
     const providers = (data.results || [])
       .filter(p => p.display_priorities?.[region] !== undefined)
       .filter(p => !p.provider_name.toLowerCase().includes('kids'))
-      .sort((a,b) => (a.display_priorities?.[region]||99) - (b.display_priorities?.[region]||99))
-      .slice(0, 22);
+      .sort((a,b) => (a.display_priorities?.[region]||999) - (b.display_priorities?.[region]||999));
     providers.forEach(p => {
       const opt = document.createElement('option');
       opt.value = p.provider_id;
