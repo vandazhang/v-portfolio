@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tonight's Pick</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f0e8;
+    --bg2: #ece7dd;
+    --ink: #0f0f0f;
+    --ink2: #3a3a3a;
+    --ink3: #7a7a7a;
+    --gold: #c8992a;
+    --gold-light: #f0c84a;
+    --gold-bg: rgba(200,153,42,0.1);
+    --white: #ffffff;
+    --surface: #ffffff;
+    --border: rgba(15,15,15,0.1);
+    --border-dark: rgba(15,15,15,0.2);
+    --red: #c0392b;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+  }
+
+  .wordmark {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 1.4rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--white);
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .wordmark span { color: var(--gold); }
+  .wordmark sub {
+    font-size: 0.55rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    color: var(--ink3);
+    font-style: italic;
+    vertical-align: baseline;
+    position: relative;
+    top: 0;
+  }
+
+  .header-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-tag::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--gold);
+    display: block;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--ink);
+    padding: 4rem 2.5rem 3.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: 'TONIGHT';
+    position: absolute;
+    right: -0.05em;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(6rem, 15vw, 13rem);
+    letter-spacing: -0.02em;
+    color: rgba(255,255,255,0.03);
+    line-height: 1;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-eyebrow::before { content: '✦'; font-size: 10px; }
+
+  .hero-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(3rem, 8vw, 6rem);
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    line-height: 0.92;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+  }
+  .hero-title em { color: var(--gold); font-style: normal; }
+
+  .hero-sub {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.45);
+    max-width: 380px;
+    line-height: 1.7;
+  }
+
+  /* ── FORM ── */
+  .form-section {
+    background: var(--bg);
+    padding: 2.5rem 2.5rem 0;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .field-block { margin-bottom: 2.25rem; }
+
+  .field-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .field-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* chips */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--white);
+    border: 1.5px solid var(--border-dark);
+    color: var(--ink2);
+    padding: 7px 16px;
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.12s;
+    user-select: none;
+  }
+  .chip:hover { border-color: var(--gold); color: var(--ink); }
+  .chip.active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--gold);
+  }
+
+  /* streaming row */
+  .streaming-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .select-field {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--white);
+    border: 1.5px solid var(--border-dark);
+    color: var(--ink);
+    padding: 10px 14px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%237a7a7a' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    width: 100%;
+    transition: border-color 0.12s;
+  }
+  .select-field:focus { border-color: var(--gold); }
+
+  .region-detect {
+    font-size: 11px;
+    color: var(--ink3);
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .region-detect .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  /* slider */
+  .slider-wrap { display: flex; align-items: center; gap: 16px; }
+  input[type=range] {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 2px; background: var(--border-dark); outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px;
+    background: var(--ink); border: 3px solid var(--gold);
+    cursor: pointer; border-radius: 0;
+  }
+  .slider-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--gold);
+    min-width: 52px;
+  }
+
+  /* keyword */
+  .keyword-input {
+    width: 100%;
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    background: var(--white);
+    border: 1.5px solid var(--border-dark);
+    color: var(--ink);
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.12s;
+    resize: none;
+  }
+  .keyword-input::placeholder { color: var(--ink3); }
+  .keyword-input:focus { border-color: var(--gold); }
+
+  /* submit */
+  .submit-wrap {
+    background: var(--bg);
+    padding: 0 2.5rem 3rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .submit-btn {
+    width: 100%;
+    background: var(--ink);
+    color: var(--gold);
+    border: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 1.1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 18px 24px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 2rem;
+  }
+  .submit-btn:hover { background: var(--gold); color: var(--ink); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── DIVIDER ── */
+  .rule {
+    height: 1px;
+    background: var(--border-dark);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── RESULTS ── */
+  #results {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 2.5rem;
+    display: none;
+  }
+
+  .results-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .results-eyebrow::before { content: '✦'; }
+
+  /* TOP PICK */
+  .top-pick {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    border: 1.5px solid var(--ink);
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.4s ease both;
+    background: var(--white);
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+  .top-poster { width: 200px; object-fit: cover; display: block; background: var(--bg2); }
+  .top-poster-ph { width: 200px; background: var(--bg2); display: flex; align-items: center; justify-content: center; font-size: 3rem; min-height: 300px; }
+
+  .top-body { padding: 2rem; display: flex; flex-direction: column; gap: 12px; }
+
+  .top-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.6rem, 4vw, 2.5rem);
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+    color: var(--ink);
+  }
+
+  .top-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .meta-item {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink3);
+  }
+  .meta-divider { color: var(--border-dark); }
+  .meta-rating {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+
+  .genre-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .genre-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid var(--border-dark);
+    color: var(--ink3);
+    background: var(--bg);
+  }
+
+  .top-overview {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--ink2);
+  }
+
+  .why-box {
+    background: var(--ink);
+    padding: 14px 16px;
+  }
+  .why-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 5px;
+  }
+  .why-text { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.7); line-height: 1.6; }
+
+  .streaming-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink3);
+  }
+  .streaming-badge {
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    letter-spacing: 0.1em;
+  }
+
+  /* OTHERS */
+  .others-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .others-label::after { content: ''; flex: 1; height: 1px; background: var(--border-dark); }
+
+  .others-grid { display: flex; flex-direction: column; gap: 0; }
+  .other-card {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    border: 1.5px solid var(--border-dark);
+    border-bottom: none;
+    background: var(--white);
+    transition: background 0.12s;
+    animation: fadeUp 0.35s ease both;
+    overflow: hidden;
+  }
+  .other-card:last-child { border-bottom: 1.5px solid var(--border-dark); }
+  .other-card:hover { background: var(--bg2); }
+
+  .other-poster { width: 72px; height: 108px; object-fit: cover; display: block; background: var(--bg2); }
+  .other-poster-ph { width: 72px; height: 108px; background: var(--bg2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+  .other-body { padding: 14px 16px; }
+  .other-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+  .other-meta { font-size: 11px; color: var(--ink3); margin-bottom: 6px; letter-spacing: 0.05em; }
+  .other-why { font-size: 12px; font-weight: 300; color: var(--ink2); line-height: 1.5; }
+
+  .try-again {
+    width: 100%;
+    margin-top: 2rem;
+    padding: 14px;
+    background: transparent;
+    border: 1.5px solid var(--border-dark);
+    color: var(--ink3);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .try-again:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* LOADING */
+  .loading-wrap {
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+  .loading-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .loading-sub { font-size: 13px; color: var(--ink3); font-weight: 300; }
+  .loading-bar {
+    width: 100%;
+    height: 2px;
+    background: var(--border-dark);
+    margin: 1.5rem 0 0;
+    overflow: hidden;
+  }
+  .loading-fill {
+    height: 100%;
+    background: var(--gold);
+    animation: loadBar 1.8s ease-in-out infinite;
+  }
+  @keyframes loadBar {
+    0% { width: 0%; margin-left: 0; }
+    50% { width: 70%; margin-left: 15%; }
+    100% { width: 0%; margin-left: 100%; }
+  }
+
+  .error-msg {
+    padding: 1.5rem;
+    border: 1.5px solid var(--red);
+    color: var(--red);
+    font-size: 13px;
+    font-weight: 300;
+    background: var(--white);
+  }
+
+  @media (max-width: 640px) {
+    header { padding: 0 1rem; }
+    .hero { padding: 2.5rem 1rem 2rem; }
+    .form-section, .submit-wrap, #results { padding-left: 1rem; padding-right: 1rem; }
+    .top-pick { grid-template-columns: 120px 1fr; }
+    .top-poster, .top-poster-ph { width: 120px; min-height: 180px; }
+    .streaming-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wordmark">Tonight's<span>Pick</span> <sub>by tmdb + ai</sub></div>
+  <div class="header-tag">Find your film</div>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">Real movies. Smart picks.</div>
+  <h1 class="hero-title">What are<br>you watching<br><em>tonight?</em></h1>
+  <p class="hero-sub">Tell us your mood, your streaming service, and your region — we'll do the rest.</p>
+</div>
+
+<div class="form-section">
+
+  <div class="field-block">
+    <div class="field-label">Your mood</div>
+    <div class="chip-row" id="moodChips">
+      <div class="chip" onclick="toggle(this,'mood')">😂 Make me laugh</div>
+      <div class="chip" onclick="toggle(this,'mood')">😱 Scare me</div>
+      <div class="chip" onclick="toggle(this,'mood')">😭 Make me cry</div>
+      <div class="chip" onclick="toggle(this,'mood')">🤯 Blow my mind</div>
+      <div class="chip" onclick="toggle(this,'mood')">😌 Something chill</div>
+      <div class="chip" onclick="toggle(this,'mood')">💪 Pump me up</div>
+      <div class="chip" onclick="toggle(this,'mood')">💕 Something romantic</div>
+      <div class="chip" onclick="toggle(this,'mood')">🧠 Make me think</div>
+    </div>
+  </div>
+
+  <div class="field-block">
+    <div class="field-label">Genre</div>
+    <div class="chip-row" id="genreChips">
+      <div class="chip" onclick="toggle(this,'genre')">Action</div>
+      <div class="chip" onclick="toggle(this,'genre')">Comedy</div>
+      <div class="chip" onclick="toggle(this,'genre')">Drama</div>
+      <div class="chip" onclick="toggle(this,'genre')">Horror</div>
+      <div class="chip" onclick="toggle(this,'genre')">Sci-Fi</div>
+      <div class="chip" onclick="toggle(this,'genre')">Thriller</div>
+      <div class="chip" onclick="toggle(this,'genre')">Romance</div>
+      <div class="chip" onclick="toggle(this,'genre')">Animation</div>
+      <div class="chip" onclick="toggle(this,'genre')">Documentary</div>
+      <div class="chip" onclick="toggle(this,'genre')">Fantasy</div>
+    </div>
+  </div>
+
+  <div class="field-block">
+    <div class="field-label">Streaming &amp; region</div>
+    <div class="streaming-row">
+      <div>
+        <select class="select-field" id="regionSelect" onchange="onRegionChange()">
+          <option value="">Detecting your region…</option>
+          <option value="US">🇺🇸 United States</option>
+          <option value="GB">🇬🇧 United Kingdom</option>
+          <option value="ID">🇮🇩 Indonesia</option>
+          <option value="SG">🇸🇬 Singapore</option>
+          <option value="AU">🇦🇺 Australia</option>
+          <option value="DE">🇩🇪 Germany</option>
+          <option value="FR">🇫🇷 France</option>
+          <option value="JP">🇯🇵 Japan</option>
+          <option value="KR">🇰🇷 South Korea</option>
+          <option value="IN">🇮🇳 India</option>
+          <option value="BR">🇧🇷 Brazil</option>
+          <option value="CA">🇨🇦 Canada</option>
+          <option value="MX">🇲🇽 Mexico</option>
+          <option value="PH">🇵🇭 Philippines</option>
+          <option value="MY">🇲🇾 Malaysia</option>
+          <option value="TH">🇹🇭 Thailand</option>
+        </select>
+        <div class="region-detect" id="detectLabel"><div class="dot"></div> Detecting your location…</div>
+      </div>
+      <select class="select-field" id="providerSelect">
+        <option value="">Any streaming service</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="field-block">
+    <div class="field-label">Minimum rating</div>
+    <div class="slider-wrap">
+      <input type="range" id="ratingSlider" min="5" max="9" step="0.5" value="7"
+        oninput="document.getElementById('ratingVal').textContent = parseFloat(this.value).toFixed(1) + ' ★'" />
+      <div class="slider-val" id="ratingVal">7.0 ★</div>
+    </div>
+  </div>
+
+  <div class="field-block">
+    <div class="field-label">Anything else?</div>
+    <textarea class="keyword-input" id="keywordInput" rows="2"
+      placeholder="e.g. something like Parasite, nothing longer than 2hrs, subtitles OK…"></textarea>
+  </div>
+
+</div>
+
+<div class="submit-wrap">
+  <button class="submit-btn" id="submitBtn" onclick="findMovies()">
+    <span>✦</span><span id="btnLabel">Find Tonight's Pick</span><span>✦</span>
+  </button>
+</div>
+
+<div id="results"></div>
+
+<script>
+const TMDB_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxYmQ2OWM5Nzg5N2Q1Zjg5ODg2MWY3Mzc1NmFmYTgyMiIsIm5iZiI6MTc4MDkxMDk4MS42OTcsInN1YiI6IjZhMjY4Yjg1MjJiZGNkN2RiYWU2YWY2NyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.eR7NwO0rPaDjeIkSVqgjLFMOnGMBKD86ItuQSnNeh20';
+
+const GENRE_MAP = { Action:28, Comedy:35, Drama:18, Horror:27, 'Sci-Fi':878, Thriller:53, Romance:10749, Animation:16, Documentary:99, Fantasy:14 };
+const MOOD_GENRE = {
+  '😂 Make me laugh':[35], '😱 Scare me':[27,53], '😭 Make me cry':[18,10749],
+  '🤯 Blow my mind':[878,9648], '😌 Something chill':[35,18], '💪 Pump me up':[28,12],
+  '💕 Something romantic':[10749,35], '🧠 Make me think':[18,878,9648]
+};
+
+const selected = { mood:[], genre:[] };
+let genreNameMap = {};
+let currentRegion = 'US';
+
+function toggle(el, group) {
+  const val = el.textContent.trim();
+  if (el.classList.contains('active')) {
+    el.classList.remove('active');
+    selected[group] = selected[group].filter(v => v !== val);
+  } else {
+    el.classList.add('active');
+    selected[group].push(val);
+  }
+}
+
+// ── IP GEOLOCATION ──
+async function detectRegion() {
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const data = await res.json();
+    const code = data.country_code;
+    currentRegion = code;
+    const sel = document.getElementById('regionSelect');
+    const opt = sel.querySelector(`option[value="${code}"]`);
+    if (opt) {
+      sel.value = code;
+      document.getElementById('detectLabel').innerHTML =
+        `<div class="dot"></div> Auto-detected: ${data.country_name} — <span style="cursor:pointer;text-decoration:underline" onclick="document.getElementById('regionSelect').focus()">change</span>`;
+    } else {
+      sel.value = 'US';
+      document.getElementById('detectLabel').innerHTML = `<div class="dot" style="background:#c0392b"></div> Region not listed — defaulted to US`;
+    }
+    await loadProviders(sel.value || 'US');
+  } catch {
+    document.getElementById('regionSelect').value = 'US';
+    document.getElementById('detectLabel').innerHTML = `<div class="dot" style="background:#c0392b"></div> Could not detect — defaulted to US`;
+    await loadProviders('US');
+  }
+}
+
+async function loadProviders(region) {
+  try {
+    const res = await fetch(`https://api.themoviedb.org/3/watch/providers/movie?language=en-US&watch_region=${region}`, {
+      headers: { Authorization: `Bearer ${TMDB_TOKEN}` }
+    });
+    const data = await res.json();
+    const sel = document.getElementById('providerSelect');
+    sel.innerHTML = '<option value="">Any streaming service</option>';
+    const providers = (data.results || [])
+      .filter(p => p.display_priorities?.[region] < 20)
+      .sort((a,b) => (a.display_priorities?.[region]||99) - (b.display_priorities?.[region]||99))
+      .slice(0, 18);
+    providers.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.provider_id;
+      opt.textContent = p.provider_name;
+      sel.appendChild(opt);
+    });
+  } catch {}
+}
+
+async function onRegionChange() {
+  const region = document.getElementById('regionSelect').value;
+  if (region) {
+    currentRegion = region;
+    await loadProviders(region);
+  }
+}
+
+// ── TMDB FETCH ──
+async function fetchGenreMap() {
+  const res = await fetch('https://api.themoviedb.org/3/genre/movie/list?language=en', {
+    headers: { Authorization: `Bearer ${TMDB_TOKEN}` }
+  });
+  const data = await res.json();
+  genreNameMap = Object.fromEntries((data.genres||[]).map(g => [g.id, g.name]));
+}
+
+async function fetchMovies(genreIds, minRating, providerId, region) {
+  let url = `https://api.themoviedb.org/3/discover/movie?include_adult=false&language=en-US&sort_by=popularity.desc&vote_average.gte=${minRating}&vote_count.gte=150&page=1`;
+  if (genreIds.length) url += `&with_genres=${genreIds.join('|')}`;
+  if (providerId) url += `&with_watch_providers=${providerId}&watch_region=${region}`;
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${TMDB_TOKEN}` } });
+  const data = await res.json();
+  return data.results || [];
+}
+
+async function fetchWatchProviders(movieId, region) {
+  try {
+    const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/watch/providers`, {
+      headers: { Authorization: `Bearer ${TMDB_TOKEN}` }
+    });
+    const data = await res.json();
+    const regionData = data.results?.[region];
+    const flat = regionData?.flatrate || regionData?.rent || regionData?.buy || [];
+    return flat.slice(0,3).map(p => p.provider_name).join(', ');
+  } catch { return ''; }
+}
+
+// ── SMART REASON (no AI needed) ──
+function buildReason(movie, moods, genres, keyword) {
+  const title = movie.title;
+  const rating = movie.vote_average?.toFixed(1);
+  const moodPhrases = {
+    '😂 Make me laugh': 'delivers the laughs',
+    '😱 Scare me': 'will keep you on the edge of your seat',
+    '😭 Make me cry': 'is an emotional gut-punch in the best way',
+    '🤯 Blow my mind': 'will leave you thinking for days',
+    '😌 Something chill': 'is the perfect low-stakes watch',
+    '💪 Pump me up': 'will get your energy going',
+    '💕 Something romantic': 'has all the romance you need tonight',
+    '🧠 Make me think': 'is smart, layered, and deeply rewarding'
+  };
+  const moodText = moods.length ? moodPhrases[moods[0]] || 'fits your mood perfectly' : 'is a crowd favourite tonight';
+  const keyNote = keyword ? ` Given what you're looking for, this is a strong match.` : '';
+  return `Rated ★${rating} and highly popular, <em>${title}</em> ${moodText}.${keyNote}`;
+}
+
+// ── MAIN ──
+async function findMovies() {
+  const btn = document.getElementById('submitBtn');
+  const label = document.getElementById('btnLabel');
+  btn.disabled = true; label.textContent = 'Finding your pick…';
+
+  const results = document.getElementById('results');
+  results.style.display = 'block';
+  results.innerHTML = `
+    <div style="max-width:900px;margin:0 auto;padding:3rem 2.5rem;">
+      <div class="loading-wrap">
+        <div class="loading-title">Scanning films…</div>
+        <div class="loading-sub">Fetching real data from TMDB</div>
+        <div class="loading-bar"><div class="loading-fill"></div></div>
+      </div>
+    </div>`;
+  results.scrollIntoView({ behavior:'smooth', block:'start' });
+
+  const minRating = parseFloat(document.getElementById('ratingSlider').value);
+  const keyword = document.getElementById('keywordInput').value.trim();
+  const region = document.getElementById('regionSelect').value || 'US';
+  const providerId = document.getElementById('providerSelect').value;
+
+  // Collect genre IDs from chips + mood mappings
+  const genreIds = new Set();
+  selected.genre.forEach(g => { if (GENRE_MAP[g]) genreIds.add(GENRE_MAP[g]); });
+  selected.mood.forEach(m => { (MOOD_GENRE[m]||[]).forEach(id => genreIds.add(id)); });
+
+  try {
+    if (!Object.keys(genreNameMap).length) await fetchGenreMap();
+
+    let movies = await fetchMovies([...genreIds], minRating, providerId, region);
+
+    // Keyword filter (title/overview match)
+    if (keyword) {
+      const kw = keyword.toLowerCase();
+      const filtered = movies.filter(m =>
+        m.title?.toLowerCase().includes(kw) ||
+        m.overview?.toLowerCase().includes(kw)
+      );
+      if (filtered.length >= 4) movies = filtered;
+    }
+
+    if (!movies.length) {
+      results.innerHTML = `<div style="max-width:900px;margin:0 auto;padding:2rem 2.5rem;"><div class="error-msg">No movies found for these filters. Try loosening the rating or removing the streaming filter.</div></div>`;
+      btn.disabled = false; label.textContent = 'Find Tonight\'s Pick'; return;
+    }
+
+    // Pick top + 3 others
+    const shuffled = movies.sort(() => Math.random() - 0.3);
+    const top = shuffled[0];
+    const others = shuffled.slice(1, 4);
+
+    const [topProviders, ...otherProviders] = await Promise.all([
+      fetchWatchProviders(top.id, region),
+      ...others.map(m => fetchWatchProviders(m.id, region))
+    ]);
+
+    const poster = p => p ? `https://image.tmdb.org/t/p/w342${p}` : null;
+    const topGenres = (top.genre_ids||[]).map(id => genreNameMap[id]).filter(Boolean);
+    const topPoster = poster(top.poster_path);
+    const topReason = buildReason(top, selected.mood, selected.genre, keyword);
+
+    results.innerHTML = `
+      <div style="max-width:900px;margin:0 auto;padding:3rem 2.5rem;">
+        <div class="results-eyebrow">Tonight's top pick</div>
+
+        <div class="top-pick">
+          ${topPoster
+            ? `<img class="top-poster" src="${topPoster}" alt="${top.title}" loading="lazy">`
+            : `<div class="top-poster-ph">🎬</div>`}
+          <div class="top-body">
+            <div class="top-title">${top.title}</div>
+            <div class="top-meta">
+              <span class="meta-item">${top.release_date?.slice(0,4)||'—'}</span>
+              <span class="meta-divider">·</span>
+              <span class="meta-rating">★ ${top.vote_average?.toFixed(1)}</span>
+              ${topProviders ? `<span class="meta-divider">·</span><span class="meta-item">${topProviders}</span>` : ''}
+            </div>
+            <div class="genre-row">${topGenres.map(g=>`<span class="genre-tag">${g}</span>`).join('')}</div>
+            <div class="top-overview">${top.overview}</div>
+            <div class="why-box">
+              <div class="why-label">Why tonight</div>
+              <div class="why-text">${topReason}</div>
+            </div>
+            ${topProviders ? `<div class="streaming-info">Available on <span class="streaming-badge">${topProviders.split(',')[0]}</span></div>` : ''}
+          </div>
+        </div>
+
+        <div class="others-label">You might also like</div>
+        <div class="others-grid">
+          ${others.map((m, i) => {
+            const oGenres = (m.genre_ids||[]).map(id=>genreNameMap[id]).filter(Boolean);
+            const oPoster = poster(m.poster_path);
+            const oProviders = otherProviders[i];
+            return `
+              <div class="other-card" style="animation-delay:${i*0.1}s">
+                ${oPoster
+                  ? `<img class="other-poster" src="${oPoster}" alt="${m.title}" loading="lazy">`
+                  : `<div class="other-poster-ph">🎬</div>`}
+                <div class="other-body">
+                  <div class="other-title">${m.title}</div>
+                  <div class="other-meta">${m.release_date?.slice(0,4)||'—'} · ★ ${m.vote_average?.toFixed(1)} · ${oGenres.slice(0,2).join(', ')}${oProviders ? ' · '+oProviders.split(',')[0] : ''}</div>
+                  <div class="other-why">${buildReason(m, selected.mood, selected.genre, '')}</div>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
+
+        <button class="try-again" onclick="reset()">↩ Try different preferences</button>
+      </div>`;
+
+  } catch(e) {
+    results.innerHTML = `<div style="max-width:900px;margin:0 auto;padding:2rem 2.5rem;"><div class="error-msg">Something went wrong: ${e.message}. Please try again.</div></div>`;
+  }
+
+  btn.disabled = false; label.textContent = 'Find Tonight\'s Pick';
+}
+
+function reset() {
+  document.getElementById('results').style.display = 'none';
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  selected.mood = []; selected.genre = [];
+  document.getElementById('keywordInput').value = '';
+  document.getElementById('ratingSlider').value = 7;
+  document.getElementById('ratingVal').textContent = '7.0 ★';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Init
+detectRegion();
+</script>
+</body>
+</html>
