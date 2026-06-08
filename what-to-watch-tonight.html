@@ -739,9 +739,10 @@ async function loadProviders(region) {
     const sel = document.getElementById('providerSelect');
     sel.innerHTML = '<option value="">Any streaming service</option>';
     const providers = (data.results || [])
-      .filter(p => p.display_priorities?.[region] < 20)
+      .filter(p => p.display_priorities?.[region] !== undefined)
+      .filter(p => !p.provider_name.toLowerCase().includes('kids'))
       .sort((a,b) => (a.display_priorities?.[region]||99) - (b.display_priorities?.[region]||99))
-      .slice(0, 18);
+      .slice(0, 22);
     providers.forEach(p => {
       const opt = document.createElement('option');
       opt.value = p.provider_id;
