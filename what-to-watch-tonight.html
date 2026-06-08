@@ -604,6 +604,20 @@
   </div>
 
   <div class="field-block">
+    <div class="field-label">Era</div>
+    <div class="chip-row" id="decadeChips">
+      <div class="chip chip--decade active" onclick="toggleDecade(this)" data-from="" data-to="">Any era</div>
+      <div class="chip chip--decade" onclick="toggleDecade(this)" data-from="2020-01-01" data-to="">2020s</div>
+      <div class="chip chip--decade" onclick="toggleDecade(this)" data-from="2010-01-01" data-to="2019-12-31">2010s</div>
+      <div class="chip chip--decade" onclick="toggleDecade(this)" data-from="2000-01-01" data-to="2009-12-31">2000s</div>
+      <div class="chip chip--decade" onclick="toggleDecade(this)" data-from="1990-01-01" data-to="1999-12-31">90s</div>
+      <div class="chip chip--decade" onclick="toggleDecade(this)" data-from="1980-01-01" data-to="1989-12-31">80s</div>
+      <div class="chip chip--decade" onclick="toggleDecade(this)" data-from="1970-01-01" data-to="1979-12-31">70s</div>
+      <div class="chip chip--decade" onclick="toggleDecade(this)" data-from="" data-to="1969-12-31">Classics</div>
+    </div>
+  </div>
+
+  <div class="field-block">
     <div class="field-label">Streaming &amp; region</div>
     <div class="streaming-row">
       <div>
@@ -669,7 +683,7 @@ const MOOD_GENRE = {
   '💕 Something romantic':[10749,35], '🧠 Make me think':[18,878,9648]
 };
 
-const selected = { mood:[], genre:[] };
+const selected = { mood:[], genre:[], decadeFrom:'', decadeTo:'' };
 let genreNameMap = {};
 let currentRegion = 'US';
 
@@ -682,6 +696,13 @@ function toggle(el, group) {
     el.classList.add('active');
     selected[group].push(val);
   }
+}
+
+function toggleDecade(el) {
+  document.querySelectorAll('.chip--decade').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selected.decadeFrom = el.dataset.from;
+  selected.decadeTo   = el.dataset.to;
 }
 
 // ── IP GEOLOCATION ──
@@ -747,10 +768,12 @@ async function fetchGenreMap() {
   genreNameMap = Object.fromEntries((data.genres||[]).map(g => [g.id, g.name]));
 }
 
-async function fetchMovies(genreIds, minRating, providerId, region) {
+async function fetchMovies(genreIds, minRating, providerId, region, decadeFrom, decadeTo) {
   const base = `https://api.themoviedb.org/3/discover/movie?include_adult=false&language=en-US&sort_by=popularity.desc&vote_average.gte=${minRating}&vote_count.gte=150`;
   const suffix = (genreIds.length ? `&with_genres=${genreIds.join('|')}` : '') +
-                 (providerId ? `&with_watch_providers=${providerId}&watch_region=${region}` : '');
+                 (providerId ? `&with_watch_providers=${providerId}&watch_region=${region}` : '') +
+                 (decadeFrom ? `&primary_release_date.gte=${decadeFrom}` : '') +
+                 (decadeTo   ? `&primary_release_date.lte=${decadeTo}`   : '');
   const [r1, r2] = await Promise.all([
     fetch(`${base}&page=1${suffix}`, { headers: { Authorization: `Bearer ${TMDB_TOKEN}` } }).then(r => r.json()),
     fetch(`${base}&page=2${suffix}`, { headers: { Authorization: `Bearer ${TMDB_TOKEN}` } }).then(r => r.json()),
@@ -820,7 +843,7 @@ async function findMovies() {
   try {
     if (!Object.keys(genreNameMap).length) await fetchGenreMap();
 
-    let movies = await fetchMovies([...genreIds], minRating, providerId, region);
+    let movies = await fetchMovies([...genreIds], minRating, providerId, region, selected.decadeFrom, selected.decadeTo);
 
     // Keyword filter (title/overview match)
     if (keyword) {
@@ -911,7 +934,8 @@ async function findMovies() {
 function reset() {
   document.getElementById('results').style.display = 'none';
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-  selected.mood = []; selected.genre = [];
+  document.querySelector('.chip--decade[data-from=""][data-to=""]')?.classList.add('active');
+  selected.mood = []; selected.genre = []; selected.decadeFrom = ''; selected.decadeTo = '';
   document.getElementById('keywordInput').value = '';
   document.getElementById('ratingSlider').value = 7;
   document.getElementById('ratingVal').textContent = '7.0 ★';
