@@ -26,26 +26,19 @@
   }
 
   html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'Barlow', sans-serif;
-    font-weight: 300;
-    min-height: 100vh;
-  }
+  body { background: var(--bg); color: var(--ink); font-family: 'Barlow', sans-serif; font-weight: 300; min-height: 100vh; }
 
   /* ── HEADER ── */
   header {
-    background: var(--ink);
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
     padding: 0 2.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 56px;
-    position: sticky;
-    top: 0;
-    z-index: 200;
+    height: 60px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
   }
 
   .wordmark {
@@ -61,14 +54,11 @@
   }
   .wordmark span { color: var(--gold); }
   .wordmark sub {
-    font-size: 0.55rem;
+    font-size: 0.52rem;
     font-weight: 400;
     letter-spacing: 0.2em;
-    color: var(--ink3);
+    color: rgba(255,255,255,0.4);
     font-style: italic;
-    vertical-align: baseline;
-    position: relative;
-    top: 0;
   }
 
   .header-tag {
@@ -77,39 +67,57 @@
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--ink3);
+    color: rgba(255,255,255,0.5);
     display: flex;
     align-items: center;
     gap: 8px;
   }
-  .header-tag::before {
-    content: '';
-    width: 20px; height: 1px;
-    background: var(--gold);
-    display: block;
-  }
+  .header-tag::before { content: ''; width: 20px; height: 1px; background: var(--gold); display: block; }
 
   /* ── HERO ── */
   .hero {
-    background: var(--ink);
-    padding: 4rem 2.5rem 3.5rem;
     position: relative;
+    height: 100vh;
+    min-height: 560px;
+    max-height: 780px;
+    display: flex;
+    align-items: flex-end;
     overflow: hidden;
   }
-  .hero::before {
-    content: 'TONIGHT';
+
+  .hero-bg {
     position: absolute;
-    right: -0.05em;
-    top: 50%;
-    transform: translateY(-50%);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: clamp(6rem, 15vw, 13rem);
-    letter-spacing: -0.02em;
-    color: rgba(255,255,255,0.03);
-    line-height: 1;
+    inset: 0;
+    background-size: cover;
+    background-position: center 20%;
+    background-color: #111;
+    transition: opacity 1.2s ease;
+    opacity: 0;
+  }
+  .hero-bg.loaded { opacity: 1; }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 55%, rgba(0,0,0,0.1) 100%),
+      linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 40%, transparent 70%);
+  }
+
+  .hero-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
     pointer-events: none;
-    white-space: nowrap;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 2.5rem 3.5rem;
+    max-width: 700px;
   }
 
   .hero-eyebrow {
@@ -123,30 +131,88 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    animation: fadeUp 0.6s 0.3s ease both;
   }
-  .hero-eyebrow::before { content: '✦'; font-size: 10px; }
+  .hero-eyebrow::before { content: '✦'; font-size: 9px; }
+
+  .hero-now-playing {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 0.4rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .hero-film-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 1.5rem;
+    min-height: 1.5rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-film-title span { color: var(--gold-light); }
 
   .hero-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
-    font-size: clamp(3rem, 8vw, 6rem);
+    font-size: clamp(3.2rem, 9vw, 7rem);
     letter-spacing: -0.01em;
     text-transform: uppercase;
-    line-height: 0.92;
+    line-height: 0.88;
     color: var(--white);
     margin-bottom: 1.5rem;
+    animation: fadeUp 0.7s 0.35s ease both;
   }
-  .hero-title em { color: var(--gold); font-style: normal; }
+  .hero-title em { color: var(--gold); font-style: normal; display: block; }
 
   .hero-sub {
     font-size: 14px;
     font-weight: 300;
-    color: rgba(255,255,255,0.45);
-    max-width: 380px;
+    color: rgba(255,255,255,0.5);
+    max-width: 360px;
     line-height: 1.7;
+    animation: fadeUp 0.6s 0.5s ease both;
   }
 
+  .scroll-cue {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 2.5rem;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    animation: fadeUp 0.6s 0.8s ease both;
+  }
+  .scroll-cue-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    writing-mode: vertical-rl;
+  }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
   /* ── FORM ── */
+  #formAnchor { scroll-margin-top: 0; }
+
   .form-section {
     background: var(--bg);
     padding: 2.5rem 2.5rem 0;
@@ -168,14 +234,8 @@
     align-items: center;
     gap: 8px;
   }
-  .field-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+  .field-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  /* chips */
   .chip-row { display: flex; flex-wrap: wrap; gap: 7px; }
   .chip {
     font-family: 'Barlow Condensed', sans-serif;
@@ -193,18 +253,9 @@
     user-select: none;
   }
   .chip:hover { border-color: var(--gold); color: var(--ink); }
-  .chip.active {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--gold);
-  }
+  .chip.active { background: var(--ink); border-color: var(--ink); color: var(--gold); }
 
-  /* streaming row */
-  .streaming-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
+  .streaming-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
   .select-field {
     font-family: 'Barlow Condensed', sans-serif;
@@ -236,224 +287,74 @@
     align-items: center;
     gap: 5px;
   }
-  .region-detect .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--gold);
-    flex-shrink: 0;
-  }
+  .region-detect .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
 
-  /* slider */
   .slider-wrap { display: flex; align-items: center; gap: 16px; }
-  input[type=range] {
-    flex: 1; -webkit-appearance: none; appearance: none;
-    height: 2px; background: var(--border-dark); outline: none;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 18px; height: 18px;
-    background: var(--ink); border: 3px solid var(--gold);
-    cursor: pointer; border-radius: 0;
-  }
-  .slider-val {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 800;
-    font-size: 1.5rem;
-    color: var(--gold);
-    min-width: 52px;
-  }
+  input[type=range] { flex: 1; -webkit-appearance: none; appearance: none; height: 2px; background: var(--border-dark); outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--ink); border: 3px solid var(--gold); cursor: pointer; border-radius: 0; }
+  .slider-val { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.5rem; color: var(--gold); min-width: 52px; }
 
-  /* keyword */
   .keyword-input {
-    width: 100%;
-    font-family: 'Barlow', sans-serif;
-    font-size: 14px;
-    font-weight: 300;
-    background: var(--white);
-    border: 1.5px solid var(--border-dark);
-    color: var(--ink);
-    padding: 12px 16px;
-    outline: none;
-    transition: border-color 0.12s;
-    resize: none;
+    width: 100%; font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 300;
+    background: var(--white); border: 1.5px solid var(--border-dark); color: var(--ink);
+    padding: 12px 16px; outline: none; transition: border-color 0.12s; resize: none;
   }
   .keyword-input::placeholder { color: var(--ink3); }
   .keyword-input:focus { border-color: var(--gold); }
 
-  /* submit */
-  .submit-wrap {
-    background: var(--bg);
-    padding: 0 2.5rem 3rem;
-    max-width: 900px;
-    margin: 0 auto;
-  }
+  .submit-wrap { background: var(--bg); padding: 0 2.5rem 3rem; max-width: 900px; margin: 0 auto; }
   .submit-btn {
-    width: 100%;
-    background: var(--ink);
-    color: var(--gold);
-    border: none;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 1.1rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 18px 24px;
-    cursor: pointer;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 2rem;
+    width: 100%; background: var(--ink); color: var(--gold); border: none;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 1.1rem; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 18px 24px; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 2rem;
   }
   .submit-btn:hover { background: var(--gold); color: var(--ink); }
   .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* ── DIVIDER ── */
-  .rule {
-    height: 1px;
-    background: var(--border-dark);
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
   /* ── RESULTS ── */
-  #results {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 3rem 2.5rem;
-    display: none;
-  }
+  #results { max-width: 900px; margin: 0 auto; padding: 3rem 2.5rem; display: none; }
 
   .results-eyebrow {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;
   }
   .results-eyebrow::before { content: '✦'; }
 
-  /* TOP PICK */
   .top-pick {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    border: 1.5px solid var(--ink);
-    margin-bottom: 2.5rem;
-    animation: fadeUp 0.4s ease both;
-    background: var(--white);
+    display: grid; grid-template-columns: 200px 1fr;
+    border: 1.5px solid var(--ink); margin-bottom: 2.5rem;
+    animation: fadeUp 0.4s ease both; background: var(--white);
   }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 
   .top-poster { width: 200px; object-fit: cover; display: block; background: var(--bg2); }
   .top-poster-ph { width: 200px; background: var(--bg2); display: flex; align-items: center; justify-content: center; font-size: 3rem; min-height: 300px; }
-
   .top-body { padding: 2rem; display: flex; flex-direction: column; gap: 12px; }
 
-  .top-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: clamp(1.6rem, 4vw, 2.5rem);
-    text-transform: uppercase;
-    letter-spacing: -0.01em;
-    line-height: 0.95;
-    color: var(--ink);
-  }
-
-  .top-meta {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .meta-item {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink3);
-  }
+  .top-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(1.6rem, 4vw, 2.5rem); text-transform: uppercase; letter-spacing: -0.01em; line-height: 0.95; color: var(--ink); }
+  .top-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .meta-item { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); }
   .meta-divider { color: var(--border-dark); }
-  .meta-rating {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    font-weight: 800;
-    color: var(--gold);
-    letter-spacing: 0.05em;
-  }
+  .meta-rating { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 800; color: var(--gold); letter-spacing: 0.05em; }
 
   .genre-row { display: flex; gap: 6px; flex-wrap: wrap; }
-  .genre-tag {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    border: 1px solid var(--border-dark);
-    color: var(--ink3);
-    background: var(--bg);
-  }
+  .genre-tag { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; padding: 3px 8px; border: 1px solid var(--border-dark); color: var(--ink3); background: var(--bg); }
 
-  .top-overview {
-    font-size: 13px;
-    font-weight: 300;
-    line-height: 1.7;
-    color: var(--ink2);
-  }
+  .top-overview { font-size: 13px; font-weight: 300; line-height: 1.7; color: var(--ink2); }
 
-  .why-box {
-    background: var(--ink);
-    padding: 14px 16px;
-  }
-  .why-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 5px;
-  }
+  .why-box { background: var(--ink); padding: 14px 16px; }
+  .why-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; }
   .why-text { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.7); line-height: 1.6; }
 
-  .streaming-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink3);
-  }
-  .streaming-badge {
-    background: var(--gold);
-    color: var(--ink);
-    font-size: 10px;
-    font-weight: 800;
-    padding: 2px 8px;
-    letter-spacing: 0.1em;
-  }
+  .streaming-info { display: flex; align-items: center; gap: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); }
+  .streaming-badge { background: var(--gold); color: var(--ink); font-size: 10px; font-weight: 800; padding: 2px 8px; letter-spacing: 0.1em; }
 
-  /* OTHERS */
   .others-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--ink3);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink3);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
   }
   .others-label::after { content: ''; flex: 1; height: 1px; background: var(--border-dark); }
 
@@ -463,98 +364,58 @@
     gap: 12px;
   }
   .other-card {
-    display: flex;
-    flex-direction: column;
+    display: flex; flex-direction: column;
     border: 1.5px solid var(--border-dark);
-    background: var(--white);
-    transition: background 0.12s;
-    animation: fadeUp 0.35s ease both;
-    overflow: hidden;
-    cursor: default;
+    background: var(--white); transition: background 0.12s;
+    animation: fadeUp 0.35s ease both; overflow: hidden; cursor: default;
   }
   .other-card:hover { background: var(--bg2); }
-
   .other-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; }
   .other-poster-ph { width: 100%; aspect-ratio: 2/3; background: var(--bg2); display: flex; align-items: center; justify-content: center; font-size: 2rem; }
   .other-body { padding: 10px 12px 12px; flex: 1; display: flex; flex-direction: column; gap: 3px; }
-  .other-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 800;
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    color: var(--ink);
-    line-height: 1.2;
-  }
+  .other-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.02em; color: var(--ink); line-height: 1.2; }
   .other-meta { font-size: 10.5px; color: var(--ink3); letter-spacing: 0.04em; margin-top: 2px; }
   .other-why { font-size: 11px; font-weight: 300; color: var(--ink2); line-height: 1.45; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
   .try-again {
-    width: 100%;
-    margin-top: 2rem;
-    padding: 14px;
-    background: transparent;
-    border: 1.5px solid var(--border-dark);
-    color: var(--ink3);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.12s;
+    width: 100%; margin-top: 2rem; padding: 14px; background: transparent;
+    border: 1.5px solid var(--border-dark); color: var(--ink3);
+    font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: all 0.12s;
   }
   .try-again:hover { border-color: var(--ink); color: var(--ink); }
 
-  /* LOADING */
-  .loading-wrap {
-    padding: 4rem 2rem;
-    text-align: center;
-  }
-  .loading-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 2rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--ink);
-    margin-bottom: 6px;
-  }
+  .loading-wrap { padding: 4rem 2rem; text-align: center; }
+  .loading-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink); margin-bottom: 6px; }
   .loading-sub { font-size: 13px; color: var(--ink3); font-weight: 300; }
-  .loading-bar {
-    width: 100%;
-    height: 2px;
-    background: var(--border-dark);
-    margin: 1.5rem 0 0;
-    overflow: hidden;
-  }
-  .loading-fill {
-    height: 100%;
-    background: var(--gold);
-    animation: loadBar 1.8s ease-in-out infinite;
-  }
-  @keyframes loadBar {
-    0% { width: 0%; margin-left: 0; }
-    50% { width: 70%; margin-left: 15%; }
-    100% { width: 0%; margin-left: 100%; }
-  }
+  .loading-bar { width: 100%; height: 2px; background: var(--border-dark); margin: 1.5rem 0 0; overflow: hidden; }
+  .loading-fill { height: 100%; background: var(--gold); animation: loadBar 1.8s ease-in-out infinite; }
+  @keyframes loadBar { 0%{width:0%;margin-left:0} 50%{width:70%;margin-left:15%} 100%{width:0%;margin-left:100%} }
 
-  .error-msg {
-    padding: 1.5rem;
-    border: 1.5px solid var(--red);
-    color: var(--red);
-    font-size: 13px;
-    font-weight: 300;
-    background: var(--white);
+  .error-msg { padding: 1.5rem; border: 1.5px solid var(--red); color: var(--red); font-size: 13px; font-weight: 300; background: var(--white); }
+
+  /* scroll cue */
+  .scroll-cue {
+    position: absolute; bottom: 1.5rem; right: 2.5rem; z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    cursor: pointer; animation: fadeUp 0.6s 0.8s ease both;
   }
+  .scroll-cue-label {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.35);
+    writing-mode: vertical-rl;
+  }
+  .scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--gold), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+  @keyframes scrollPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
 
   @media (max-width: 640px) {
     header { padding: 0 1rem; }
-    .hero { padding: 2.5rem 1rem 2rem; }
+    .hero-content { padding: 0 1rem 2.5rem; }
     .form-section, .submit-wrap, #results { padding-left: 1rem; padding-right: 1rem; }
     .top-pick { grid-template-columns: 120px 1fr; }
     .top-poster, .top-poster-ph { width: 120px; min-height: 180px; }
     .streaming-row { grid-template-columns: 1fr; }
+    .hero { max-height: 620px; }
   }
 </style>
 </head>
@@ -565,12 +426,29 @@
   <div class="header-tag">Find your film</div>
 </header>
 
-<div class="hero">
-  <div class="hero-eyebrow">Real movies. Smart picks.</div>
-  <h1 class="hero-title">What are<br>you watching<br><em>tonight?</em></h1>
-  <p class="hero-sub">Tell us your mood, your streaming service, and your region — we'll do the rest.</p>
+<!-- ── HERO WITH LIVE TMDB BACKDROP ── -->
+<div class="hero" id="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-grain"></div>
+
+  <div class="hero-content">
+    <div class="hero-now-playing" id="nowPlayingLabel"></div>
+    <div class="hero-film-title" id="heroFilmTitle"></div>
+    <div class="hero-eyebrow">Real movies. Smart picks.</div>
+    <h1 class="hero-title">What are<br>you watching<br><em>tonight?</em></h1>
+    <p class="hero-sub">Tell us your mood, your streaming service, and your region — we'll do the rest.</p>
+  </div>
+
+  <div class="scroll-cue" onclick="document.getElementById('formAnchor').scrollIntoView({behavior:'smooth'})">
+    <div class="scroll-cue-label">Scroll</div>
+    <div class="scroll-line"></div>
+  </div>
 </div>
 
+<div id="formAnchor"></div>
+
+<!-- ── FORM (CC additions preserved) ── -->
 <div class="form-section">
 
   <div class="field-block">
@@ -675,12 +553,23 @@
 
 <script>
 const TMDB_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxYmQ2OWM5Nzg5N2Q1Zjg5ODg2MWY3Mzc1NmFmYTgyMiIsIm5iZiI6MTc4MDkxMDk4MS42OTcsInN1YiI6IjZhMjY4Yjg1MjJiZGNkN2RiYWU2YWY2NyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.eR7NwO0rPaDjeIkSVqgjLFMOnGMBKD86ItuQSnNeh20';
+const TMDB_HEADERS = { Authorization: `Bearer ${TMDB_TOKEN}` };
 
 const GENRE_MAP = { Action:28, Comedy:35, Drama:18, Horror:27, 'Sci-Fi':878, Thriller:53, Romance:10749, Animation:16, Documentary:99, Fantasy:14 };
 const MOOD_GENRE = {
   '😂 Make me laugh':[35], '😱 Scare me':[27,53], '😭 Make me cry':[18,10749],
   '🤯 Blow my mind':[878,9648], '😌 Something chill':[35,18], '💪 Pump me up':[28,12],
   '💕 Something romantic':[10749,35], '🧠 Make me think':[18,878,9648]
+};
+const MOOD_PHRASES = {
+  '😂 Make me laugh': 'delivers the laughs',
+  '😱 Scare me': 'will keep you on the edge of your seat',
+  '😭 Make me cry': 'is an emotional gut-punch in the best way',
+  '🤯 Blow my mind': 'will leave you thinking for days',
+  '😌 Something chill': 'is the perfect low-stakes watch',
+  '💪 Pump me up': 'will get your energy going',
+  '💕 Something romantic': 'has all the romance you need tonight',
+  '🧠 Make me think': 'is smart, layered, and deeply rewarding'
 };
 
 const selected = { mood:[], genre:[], decadeFrom:'', decadeTo:'' };
@@ -705,6 +594,30 @@ function toggleDecade(el) {
   selected.decadeTo   = el.dataset.to;
 }
 
+// ── HERO BACKDROP ──
+async function loadHeroBackdrop() {
+  try {
+    const page = Math.floor(Math.random() * 5) + 1;
+    const res = await fetch(`https://api.themoviedb.org/3/movie/popular?language=en-US&page=${page}`, { headers: TMDB_HEADERS });
+    const data = await res.json();
+    const movies = (data.results || []).filter(m => m.backdrop_path);
+    if (!movies.length) return;
+    const movie = movies[Math.floor(Math.random() * Math.min(movies.length, 8))];
+    const bg = document.getElementById('heroBg');
+    const img = new Image();
+    img.onload = () => {
+      bg.style.backgroundImage = `url(${img.src})`;
+      bg.classList.add('loaded');
+    };
+    img.src = `https://image.tmdb.org/t/p/original${movie.backdrop_path}`;
+    document.getElementById('nowPlayingLabel').textContent = 'Now playing as backdrop —';
+    document.getElementById('heroFilmTitle').innerHTML =
+      `<span>${movie.title}</span> <span style="color:rgba(255,255,255,0.3);font-weight:400">(${movie.release_date?.slice(0,4)}) · ★ ${movie.vote_average?.toFixed(1)}</span>`;
+  } catch {
+    document.getElementById('nowPlayingLabel').textContent = '';
+  }
+}
+
 // ── IP GEOLOCATION ──
 async function detectRegion() {
   try {
@@ -713,8 +626,7 @@ async function detectRegion() {
     const code = data.country_code;
     currentRegion = code;
     const sel = document.getElementById('regionSelect');
-    const opt = sel.querySelector(`option[value="${code}"]`);
-    if (opt) {
+    if (sel.querySelector(`option[value="${code}"]`)) {
       sel.value = code;
       document.getElementById('detectLabel').innerHTML =
         `<div class="dot"></div> Auto-detected: ${data.country_name} — <span style="cursor:pointer;text-decoration:underline" onclick="document.getElementById('regionSelect').focus()">change</span>`;
@@ -732,9 +644,7 @@ async function detectRegion() {
 
 async function loadProviders(region) {
   try {
-    const res = await fetch(`https://api.themoviedb.org/3/watch/providers/movie?language=en-US&watch_region=${region}`, {
-      headers: { Authorization: `Bearer ${TMDB_TOKEN}` }
-    });
+    const res = await fetch(`https://api.themoviedb.org/3/watch/providers/movie?language=en-US&watch_region=${region}`, { headers: TMDB_HEADERS });
     const data = await res.json();
     const sel = document.getElementById('providerSelect');
     sel.innerHTML = '<option value="">Any streaming service</option>';
@@ -754,17 +664,12 @@ async function loadProviders(region) {
 
 async function onRegionChange() {
   const region = document.getElementById('regionSelect').value;
-  if (region) {
-    currentRegion = region;
-    await loadProviders(region);
-  }
+  if (region) { currentRegion = region; await loadProviders(region); }
 }
 
-// ── TMDB FETCH ──
+// ── TMDB ──
 async function fetchGenreMap() {
-  const res = await fetch('https://api.themoviedb.org/3/genre/movie/list?language=en', {
-    headers: { Authorization: `Bearer ${TMDB_TOKEN}` }
-  });
+  const res = await fetch('https://api.themoviedb.org/3/genre/movie/list?language=en', { headers: TMDB_HEADERS });
   const data = await res.json();
   genreNameMap = Object.fromEntries((data.genres||[]).map(g => [g.id, g.name]));
 }
@@ -772,45 +677,31 @@ async function fetchGenreMap() {
 async function fetchMovies(genreIds, minRating, providerId, region, decadeFrom, decadeTo) {
   const base = `https://api.themoviedb.org/3/discover/movie?include_adult=false&language=en-US&sort_by=popularity.desc&vote_average.gte=${minRating}&vote_count.gte=150`;
   const suffix = (genreIds.length ? `&with_genres=${genreIds.join('|')}` : '') +
-                 (providerId ? `&with_watch_providers=${providerId}&watch_region=${region}` : '') +
-                 (decadeFrom ? `&primary_release_date.gte=${decadeFrom}` : '') +
-                 (decadeTo   ? `&primary_release_date.lte=${decadeTo}`   : '');
+    (providerId ? `&with_watch_providers=${providerId}&watch_region=${region}` : '') +
+    (decadeFrom ? `&primary_release_date.gte=${decadeFrom}` : '') +
+    (decadeTo   ? `&primary_release_date.lte=${decadeTo}`   : '');
   const [r1, r2] = await Promise.all([
-    fetch(`${base}&page=1${suffix}`, { headers: { Authorization: `Bearer ${TMDB_TOKEN}` } }).then(r => r.json()),
-    fetch(`${base}&page=2${suffix}`, { headers: { Authorization: `Bearer ${TMDB_TOKEN}` } }).then(r => r.json()),
+    fetch(`${base}&page=1${suffix}`, { headers: TMDB_HEADERS }).then(r => r.json()),
+    fetch(`${base}&page=2${suffix}`, { headers: TMDB_HEADERS }).then(r => r.json()),
   ]);
-  return [...(r1.results || []), ...(r2.results || [])];
+  return [...(r1.results||[]), ...(r2.results||[])];
 }
 
 async function fetchWatchProviders(movieId, region) {
   try {
-    const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/watch/providers`, {
-      headers: { Authorization: `Bearer ${TMDB_TOKEN}` }
-    });
+    const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/watch/providers`, { headers: TMDB_HEADERS });
     const data = await res.json();
-    const regionData = data.results?.[region];
-    const flat = regionData?.flatrate || regionData?.rent || regionData?.buy || [];
+    const rd = data.results?.[region];
+    const flat = rd?.flatrate || rd?.rent || rd?.buy || [];
     return flat.slice(0,3).map(p => p.provider_name).join(', ');
   } catch { return ''; }
 }
 
-// ── SMART REASON (no AI needed) ──
-function buildReason(movie, moods, genres, keyword) {
-  const title = movie.title;
+function buildReason(movie, moods, keyword) {
   const rating = movie.vote_average?.toFixed(1);
-  const moodPhrases = {
-    '😂 Make me laugh': 'delivers the laughs',
-    '😱 Scare me': 'will keep you on the edge of your seat',
-    '😭 Make me cry': 'is an emotional gut-punch in the best way',
-    '🤯 Blow my mind': 'will leave you thinking for days',
-    '😌 Something chill': 'is the perfect low-stakes watch',
-    '💪 Pump me up': 'will get your energy going',
-    '💕 Something romantic': 'has all the romance you need tonight',
-    '🧠 Make me think': 'is smart, layered, and deeply rewarding'
-  };
-  const moodText = moods.length ? moodPhrases[moods[0]] || 'fits your mood perfectly' : 'is a crowd favourite tonight';
+  const moodText = moods.length ? (MOOD_PHRASES[moods[0]] || 'fits your mood perfectly') : 'is a crowd favourite tonight';
   const keyNote = keyword ? ` Given what you're looking for, this is a strong match.` : '';
-  return `Rated ★${rating} and highly popular, <em>${title}</em> ${moodText}.${keyNote}`;
+  return `Rated ★${rating} and highly popular, <em>${movie.title}</em> ${moodText}.${keyNote}`;
 }
 
 // ── MAIN ──
@@ -821,14 +712,7 @@ async function findMovies() {
 
   const results = document.getElementById('results');
   results.style.display = 'block';
-  results.innerHTML = `
-    <div style="max-width:900px;margin:0 auto;padding:3rem 2.5rem;">
-      <div class="loading-wrap">
-        <div class="loading-title">Scanning films…</div>
-        <div class="loading-sub">Fetching real data from TMDB</div>
-        <div class="loading-bar"><div class="loading-fill"></div></div>
-      </div>
-    </div>`;
+  results.innerHTML = `<div style="max-width:900px;margin:0 auto;padding:3rem 2.5rem;"><div class="loading-wrap"><div class="loading-title">Scanning films…</div><div class="loading-sub">Fetching real data from TMDB</div><div class="loading-bar"><div class="loading-fill"></div></div></div></div>`;
   results.scrollIntoView({ behavior:'smooth', block:'start' });
 
   const minRating = parseFloat(document.getElementById('ratingSlider').value);
@@ -836,32 +720,25 @@ async function findMovies() {
   const region = document.getElementById('regionSelect').value || 'US';
   const providerId = document.getElementById('providerSelect').value;
 
-  // Collect genre IDs from chips + mood mappings
   const genreIds = new Set();
   selected.genre.forEach(g => { if (GENRE_MAP[g]) genreIds.add(GENRE_MAP[g]); });
   selected.mood.forEach(m => { (MOOD_GENRE[m]||[]).forEach(id => genreIds.add(id)); });
 
   try {
     if (!Object.keys(genreNameMap).length) await fetchGenreMap();
-
     let movies = await fetchMovies([...genreIds], minRating, providerId, region, selected.decadeFrom, selected.decadeTo);
 
-    // Keyword filter (title/overview match)
     if (keyword) {
       const kw = keyword.toLowerCase();
-      const filtered = movies.filter(m =>
-        m.title?.toLowerCase().includes(kw) ||
-        m.overview?.toLowerCase().includes(kw)
-      );
+      const filtered = movies.filter(m => m.title?.toLowerCase().includes(kw) || m.overview?.toLowerCase().includes(kw));
       if (filtered.length >= 4) movies = filtered;
     }
 
     if (!movies.length) {
-      results.innerHTML = `<div style="max-width:900px;margin:0 auto;padding:2rem 2.5rem;"><div class="error-msg">No movies found for these filters. Try loosening the rating or removing the streaming filter.</div></div>`;
+      results.innerHTML = `<div style="max-width:900px;margin:0 auto;padding:2rem 2.5rem;"><div class="error-msg">No movies found. Try loosening the rating or removing the streaming filter.</div></div>`;
       btn.disabled = false; label.textContent = 'Find Tonight\'s Pick'; return;
     }
 
-    // Pick top pick + up to 12 others
     const shuffled = movies.sort(() => Math.random() - 0.3);
     const top = shuffled[0];
     const others = shuffled.slice(1, 13);
@@ -874,16 +751,12 @@ async function findMovies() {
     const poster = p => p ? `https://image.tmdb.org/t/p/w342${p}` : null;
     const topGenres = (top.genre_ids||[]).map(id => genreNameMap[id]).filter(Boolean);
     const topPoster = poster(top.poster_path);
-    const topReason = buildReason(top, selected.mood, selected.genre, keyword);
 
     results.innerHTML = `
       <div style="max-width:900px;margin:0 auto;padding:3rem 2.5rem;">
         <div class="results-eyebrow">Tonight's top pick</div>
-
         <div class="top-pick">
-          ${topPoster
-            ? `<img class="top-poster" src="${topPoster}" alt="${top.title}" loading="lazy">`
-            : `<div class="top-poster-ph">🎬</div>`}
+          ${topPoster ? `<img class="top-poster" src="${topPoster}" alt="${top.title}" loading="lazy">` : `<div class="top-poster-ph">🎬</div>`}
           <div class="top-body">
             <div class="top-title">${top.title}</div>
             <div class="top-meta">
@@ -896,7 +769,7 @@ async function findMovies() {
             <div class="top-overview">${top.overview}</div>
             <div class="why-box">
               <div class="why-label">Why tonight</div>
-              <div class="why-text">${topReason}</div>
+              <div class="why-text">${buildReason(top, selected.mood, keyword)}</div>
             </div>
             ${topProviders ? `<div class="streaming-info">Available on <span class="streaming-badge">${topProviders.split(',')[0]}</span></div>` : ''}
           </div>
@@ -904,21 +777,18 @@ async function findMovies() {
 
         <div class="others-label">More to explore (${others.length})</div>
         <div class="others-grid">
-          ${others.map((m, i) => {
-            const oGenres = (m.genre_ids||[]).map(id=>genreNameMap[id]).filter(Boolean);
-            const oPoster = poster(m.poster_path);
+          ${others.map((m,i) => {
+            const oG = (m.genre_ids||[]).map(id=>genreNameMap[id]).filter(Boolean);
+            const oP = poster(m.poster_path);
             const oProviders = otherProviders[i];
-            return `
-              <div class="other-card" style="animation-delay:${i*0.1}s">
-                ${oPoster
-                  ? `<img class="other-poster" src="${oPoster}" alt="${m.title}" loading="lazy">`
-                  : `<div class="other-poster-ph">🎬</div>`}
-                <div class="other-body">
-                  <div class="other-title">${m.title}</div>
-                  <div class="other-meta">${m.release_date?.slice(0,4)||'—'} · ★ ${m.vote_average?.toFixed(1)} · ${oGenres.slice(0,2).join(', ')}${oProviders ? ' · '+oProviders.split(',')[0] : ''}</div>
-                  <div class="other-why">${buildReason(m, selected.mood, selected.genre, '')}</div>
-                </div>
-              </div>`;
+            return `<div class="other-card" style="animation-delay:${i*0.05}s">
+              ${oP ? `<img class="other-poster" src="${oP}" alt="${m.title}" loading="lazy">` : `<div class="other-poster-ph">🎬</div>`}
+              <div class="other-body">
+                <div class="other-title">${m.title}</div>
+                <div class="other-meta">${m.release_date?.slice(0,4)||'—'} · ★ ${m.vote_average?.toFixed(1)} · ${oG.slice(0,2).join(', ')}${oProviders?' · '+oProviders.split(',')[0]:''}</div>
+                <div class="other-why">${buildReason(m, selected.mood, '')}</div>
+              </div>
+            </div>`;
           }).join('')}
         </div>
 
@@ -944,6 +814,7 @@ function reset() {
 }
 
 // Init
+loadHeroBackdrop();
 detectRegion();
 </script>
 </body>
