@@ -648,10 +648,14 @@ async function loadProviders(region) {
     const data = await res.json();
     const sel = document.getElementById('providerSelect');
     sel.innerHTML = '<option value="">Any streaming service</option>';
-    const providers = (data.results || [])
-      .filter(p => p.display_priorities?.[region] !== undefined)
-      .filter(p => !p.provider_name.toLowerCase().includes('kids'))
+    const PINNED = [8, 1899, 122, 489]; // Netflix, HBO Max, Disney+, Vidio
+    const all = (data.results || [])
+      .filter(p => !p.provider_name.toLowerCase().includes('kids'));
+    const pinned = PINNED.map(id => all.find(p => p.provider_id === id)).filter(Boolean);
+    const rest = all
+      .filter(p => !PINNED.includes(p.provider_id))
       .sort((a,b) => (a.display_priorities?.[region]||999) - (b.display_priorities?.[region]||999));
+    const providers = [...pinned, ...rest];
     providers.forEach(p => {
       const opt = document.createElement('option');
       opt.value = p.provider_id;
